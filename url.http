@@ -1,0 +1,16 @@
+@baseUrl= http://localhost:8080
+@shortUrl = 600b0c
+@id= 5f7983df7d2c726755600b0c
+#################################
+GET {{baseUrl}}/url/{{shortUrl}} HTTP/1.1
+Accept: application/json
+#################################
+POST {{baseUrl}}/url HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "fullUrl": "https://www.udemy.com/course/spring-boot-il-corso/?couponCode=A08DFEADBF45C40D3810"
+}
+#################################
+DELETE {{baseUrl}}/url/{{id}} HTTP/1.1
