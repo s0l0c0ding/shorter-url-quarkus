@@ -33,7 +33,7 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 
 You can then execute your native executable with: `./target/shorter-url-quarkus-0.1-runner`
 
-If you want to learn more about building native executables, please visti [here](https://quarkus.io/guides/building-native-image).
+If you want to learn more about building native executables, please looka at the [docs](https://quarkus.io/guides/building-native-image).
 
 ## Multi-stage Docker build in GCP console
 >Before launching our Docker build, we need to update the default .dockerignore file as it filters everything except the target directory and as we plan to build inside a container we need to be able to copy the src directory. So edit your .dockerignore and remove or comment its content.

@@ -1,0 +1,65 @@
+name: GCP deploy
+
+on:
+  release:
+    types:
+      - created
+      
+env:
+  SERVICE_NAME: mainproject01jar
+  FIREBASE_FILE: src/main/resources/solohms-ec819-firebase-adminsdk-jmj95-0d366b9dce.json
+  APPLICATION_FILE: src/main/resources/application.yml
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: app-prop
+      env:
+        APP_PROP: ${{ secrets.APP_PROP }}
+      run: |
+        echo "$APP_PROP" | base64 -d > "$APPLICATION_FILE"
+    - name: fire-prop
+      env:
+        FIREBASE_PROP: ${{ secrets.FIREBASE_PROP }}
+      run: |
+        echo "$FIREBASE_PROP" | base64 -d >  "$FIREBASE_FILE"
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - name: Cache maven modules
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-mvn-modules
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+    - name: check resourse
+      run: |
+        [ -f "$FIREBASE_FILE" ] && echo "Found" || echo "Not found"
+    - name: Build with Maven
+      env:
+         PROJECT_ID: ${{ secrets.RUN_PROJECT }}
+      run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=pms:gcr.io//"$PROJECT_ID"/$SERVICE_NAME:$GITHUB_SHA"
+    - name: Install gcloud  
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '286.0.0'
+        service_account_key: ${{ secrets.RUN_SA_KEY }}
+        project_id: ${{ secrets.RUN_PROJECT }}
+    - name: auth
+      run: gcloud auth configure-docker
+    - name: Build
+      env:
+         PROJECT_ID: ${{ secrets.RUN_PROJECT }}
+      run: docker push gcr.io//"$PROJECT_ID"/$SERVICE_NAME:$GITHUB_SHA"
+    - name: auth logout
+      run: gcloud logout
