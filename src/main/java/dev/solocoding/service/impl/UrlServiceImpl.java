@@ -61,11 +61,11 @@ public class UrlServiceImpl implements UrlService {
         return new UrlDto(url);
     }
 
-    protected Url checkExistence(String shortUrl) {
-        return repo.findByShortUrl(shortUrl).orElseThrow(() -> new UrlNotFoundException());
+    private Url checkExistence(String shortUrl) {
+        return repo.findByShortUrl(shortUrl).orElseThrow((UrlNotFoundException::new));
     }
 
-    protected boolean isValidUrl(UrlDto url) {
+    private boolean isValidUrl(UrlDto url) {
         String regex = "((http|https)://)(www.)?" + "[a-zA-Z0-9@:%._\\+~#?&/=]" + "{2,256}\\.[a-z]"
                 + "{2,6}\\b([-a-zA-Z0-9@:%" + "._\\+~#?&/=]*)";
         return url.getFullUrl() != null && Pattern.matches(regex, url.getFullUrl());

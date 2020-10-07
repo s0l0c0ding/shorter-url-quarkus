@@ -1,3 +1,5 @@
+![Maven test](https://github.com/s0l0c0ding/shorter-url-quarkus/workflows/Maven%20test/badge.svg?branch=master)
+<br>
 # shorter-url-quarkus project
 The aim of the app is to shorten a given url and saving the visitors count with each redirect by using my own tool.
 
@@ -33,7 +35,7 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 
 You can then execute your native executable with: `./target/shorter-url-quarkus-0.1-runner`
 
-If you want to learn more about building native executables, please looka at the [docs](https://quarkus.io/guides/building-native-image).
+If you want to learn more about building native executables, please look at the [docs](https://quarkus.io/guides/building-native-image).
 
 ## Multi-stage Docker build in GCP console
 >Before launching our Docker build, we need to update the default .dockerignore file as it filters everything except the target directory and as we plan to build inside a container we need to be able to copy the src directory. So edit your .dockerignore and remove or comment its content.
