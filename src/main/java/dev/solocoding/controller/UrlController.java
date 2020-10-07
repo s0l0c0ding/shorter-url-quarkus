@@ -14,7 +14,7 @@ import dev.solocoding.dto.UrlDto;
 import dev.solocoding.service.UrlService;
 import lombok.RequiredArgsConstructor;
 
-@Path("/url")
+// @Path("/url")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RequiredArgsConstructor
