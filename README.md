@@ -1,4 +1,5 @@
 ![Maven test](https://github.com/s0l0c0ding/shorter-url-quarkus/workflows/Maven%20test/badge.svg?branch=master)
+![GCP deploy](https://github.com/s0l0c0ding/shorter-url-quarkus/workflows/GCP%20deploy/badge.svg)
 <br>
 # shorter-url-quarkus project
 The aim of the app is to shorten a given url and saving the visitors count with each redirect by using my own tool.
