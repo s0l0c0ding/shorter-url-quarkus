@@ -9,17 +9,19 @@ import io.vertx.core.http.HttpServerRequest;
 @RequestScoped
 public class RequestDetailsImpl implements RequestDetails {
 
-    HttpServerRequest request;
+    private HttpServerRequest request;
+    private String callerIp;
 
     @Override
     @PostConstruct
-    public void setRequest(HttpServerRequest request) {
+    public void setRequest(HttpServerRequest request, String callerIp) {
         this.request = request;
+        this.callerIp = callerIp;
     }
 
     @Override
     public String getRemoteAddress() {
-        return request.remoteAddress().toString();
+        return callerIp;
     }
 
     @Override

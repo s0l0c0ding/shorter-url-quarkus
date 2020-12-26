@@ -10,8 +10,10 @@ import javax.ws.rs.ext.Provider;
 
 import dev.solocoding.service.RequestDetails;
 import io.vertx.core.http.HttpServerRequest;
+import lombok.extern.slf4j.Slf4j;
 
 @Provider
+@Slf4j
 public class RequestFilter implements ContainerRequestFilter {
 
     @Context
@@ -22,7 +24,13 @@ public class RequestFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        requestDetails.setRequest(request);
+        final String headerIp = requestContext.getHeaders().entrySet().stream()
+                                                .filter(h -> h.getKey().equalsIgnoreCase("x-forwarded-for"))
+                                                .findFirst()
+                                                .map(h -> h.getValue().get(0))
+                                                .orElse(request.remoteAddress().toString());
+        log.info("Header 'x-forwarded-for': {}", headerIp);
+        requestDetails.setRequest(request, headerIp);
     }
     
 }

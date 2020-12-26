@@ -8,5 +8,5 @@ public interface RequestDetails {
 
     HttpServerRequest getHttpServerRequest();
 
-    void setRequest(HttpServerRequest request);
+    void setRequest(HttpServerRequest request, String callerIp);
 }
