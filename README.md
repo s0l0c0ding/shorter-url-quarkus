@@ -13,7 +13,7 @@ This project uses Quarkus and MongoDb
 You can run your application in dev mode that enables live coding using:
 - first, launch a MongoDb container using docker:
  ```
- docekr run --name mongodb -d mongo:4.2-bionic 
+ docker run --name mongodb -d mongo:4.2-bionic 
  ```
 - second, launch the following mvn comand:
 ```
