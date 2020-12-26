@@ -24,12 +24,12 @@ public class UrlController {
 
     @GET
     @Path("/{shortUrl}")
-    public  UrlDto getUrlByShortUrl(@PathParam String shortUrl) {
+    public UrlDto getUrlByShortUrl(@PathParam String shortUrl) {
         return urlService.getUrlByShortUrl(shortUrl);
     }
 
     @POST
-    public  UrlDto saveUrl(UrlDto dto) {
+    public UrlDto saveUrl(UrlDto dto) {
         return urlService.saveUrl(dto);
     }
 
