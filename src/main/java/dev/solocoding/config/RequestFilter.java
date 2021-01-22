@@ -28,7 +28,7 @@ public class RequestFilter implements ContainerRequestFilter {
                                                 .filter(h -> h.getKey().equalsIgnoreCase("x-forwarded-for"))
                                                 .findFirst()
                                                 .map(h -> h.getValue().get(0))
-                                                .orElse(request.remoteAddress().toString());
+                                                .orElseGet(() -> request.remoteAddress().toString());
         log.info("Header 'x-forwarded-for': {}", headerIp);
         requestDetails.setRequest(request, headerIp);
     }

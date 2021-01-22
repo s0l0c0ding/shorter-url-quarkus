@@ -24,7 +24,7 @@ public class IpServiceImpl implements IpService {
         Optional<Ip> ipEntity = ipRepo.findByIpNumber(ipNumber);
         IpDto defaultDto = new IpDto();
         defaultDto.setCountryCode("N.A.");
-        return ipEntity.map(IpDto::new).orElse(defaultDto);
+        return ipEntity.map(IpDto::new).orElseGet(()-> defaultDto);
     }
 
     private long convertIpToIpNumber(String ipString) {
@@ -38,6 +38,7 @@ public class IpServiceImpl implements IpService {
             }
         } catch (Exception e) {
             log.error("converting ip adress: {}", ipString);
+            throw e;
         }
 
         return result;
