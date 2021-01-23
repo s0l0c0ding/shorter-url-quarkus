@@ -1,12 +1,12 @@
 package dev.solocoding.service.impl;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 
 import dev.solocoding.service.RequestDetails;
 import io.vertx.core.http.HttpServerRequest;
 
-@RequestScoped
+@ApplicationScoped
 public class RequestDetailsImpl implements RequestDetails {
 
     private HttpServerRequest request;

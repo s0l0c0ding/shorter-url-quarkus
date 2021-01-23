@@ -3,7 +3,10 @@ package dev.solocoding.service.impl;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -11,7 +14,6 @@ import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import dev.solocoding.common.CountryCount;
@@ -120,35 +122,12 @@ class UrlServiceImplTest {
     }
 
     @Test
-    @Disabled
-    void getAndRedirectShouldAddCountryWhenIpIsFound() {
+    void updateCounterShouldAddCountryWhenIpIsFound() {
         when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(getShortUrlStub()));
         when(requestDetails.getRemoteAddress()).thenReturn(REMOTE_IP);
         when(ipService.getByIp(REMOTE_IP)).thenReturn(getIpDtoStub());
-        UrlDto actual = urlService.getAndRedirect(SHORT_URL);
-        assertEquals(2, actual.getCountryCountList().get(0).getCount());
-    }
-
-    @Test
-    @Disabled
-    void getAndRedirectShouldAddCountryWhenIpIsNotFound() {
-        when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(getShortUrlStub()));
-        when(requestDetails.getRemoteAddress()).thenReturn(REMOTE_IP);
-        when(ipService.getByIp(REMOTE_IP)).thenReturn(new IpDto());
-        // when(bus.sendAndForget("redirectCounter", getShortUrlStub())).thenCallRealMethod();
-        UrlDto actual = urlService.getAndRedirect(SHORT_URL);
-        assertEquals(1, actual.getCountryCountList().get(0).getCount());
-    }
-
-    @Test
-    @Disabled
-    void getAndRedirectShouldAddCountryWhenIpIsFoundWithCountryListEmpty() {
-        Url urlWithEmptyCountry = getShortUrlStub();
-        urlWithEmptyCountry.setCountryCountList(null);
-        when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(urlWithEmptyCountry));
-        when(requestDetails.getRemoteAddress()).thenReturn(REMOTE_IP);
-        when(ipService.getByIp(REMOTE_IP)).thenReturn(getIpDtoStub());
-        UrlDto actual = urlService.getAndRedirect(SHORT_URL);
-        assertEquals(1, actual.getCountryCountList().get(0).getCount());
+        urlService.updateCounter(getShortUrlStub());
+        verify(ipService, times(1)).getByIp(REMOTE_IP);
+        verify(repo, times(1)).update(any(Url.class));
     }
 }

@@ -38,7 +38,6 @@ public class IpServiceImpl implements IpService {
             }
         } catch (Exception e) {
             log.error("converting ip adress: {}", ipString);
-            throw e;
         }
 
         return result;
