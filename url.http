@@ -1,16 +1,35 @@
 @baseUrl= http://localhost:8080
-@shortUrl = 600b0c
-@id= 5f7983df7d2c726755600b0c
+@shortUrl = 91a584
+@id= 604374f9aff94a1430ff51a4
+@auth= Basic 
 #################################
 GET {{baseUrl}}/url/{{shortUrl}} HTTP/1.1
 Accept: application/json
+Authorization: {{auth}}
 #################################
 POST {{baseUrl}}/url HTTP/1.1
 Accept: application/json
 Content-Type: application/json
+Authorization: {{auth}}
 
 {
     "fullUrl": "https://www.udemy.com/course/spring-boot-il-corso/?couponCode=A08DFEADBF45C40D3810"
 }
 #################################
 DELETE {{baseUrl}}/url/{{id}} HTTP/1.1
+Authorization: {{auth}}
+
+#################################
+PUT {{baseUrl}}/url/{{shortUrl}} HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Authorization: {{auth}}
+
+{
+    "fullUrl": "https://www.solocoding.dev"
+}
+##################################################################
+GET {{baseUrl}}/url?index=0&size=10 HTTP/1.1
+Accept: application/json
+Authorization: {{auth}}
+#################################

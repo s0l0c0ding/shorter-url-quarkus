@@ -1,5 +1,7 @@
 package dev.solocoding.service;
 
+import java.util.List;
+
 import dev.solocoding.dto.UrlDto;
 
 public interface UrlService {
@@ -21,4 +23,14 @@ public interface UrlService {
      * @return UrlDto
      */
     UrlDto getAndRedirect (String shortUrl);
+
+    /**
+     * Update the full url by the short one
+     * @param shortUrl
+     * @param dto
+     * @return
+     */
+    UrlDto updateUrlByShortId(String shortUrl, UrlDto dto);
+
+	List<UrlDto> getAll(int index, int size);
 }

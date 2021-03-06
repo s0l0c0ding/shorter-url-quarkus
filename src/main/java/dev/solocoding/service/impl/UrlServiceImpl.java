@@ -4,7 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -21,6 +23,7 @@ import dev.solocoding.repository.UrlRepository;
 import dev.solocoding.service.IpService;
 import dev.solocoding.service.RequestDetails;
 import dev.solocoding.service.UrlService;
+import io.quarkus.panache.common.Page;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import lombok.RequiredArgsConstructor;
@@ -43,15 +46,11 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public UrlDto saveUrl(UrlDto dto) {
-        if (!isValidUrl(dto)) {
-            throw new NotValidUrlException();
-        }
+        Optional.ofNullable(dto).ifPresent(isValidUrl);
         var entity = new Url(dto);
-        if (Objects.isNull(entity.getId())){
-            ObjectId id = new ObjectId();
-            entity.setId(id);
-            entity.setShortUrl(id.toHexString().substring(18, 24));
-        }
+        ObjectId id = new ObjectId();
+        entity.setId(id);
+        entity.setShortUrl(id.toHexString().substring(18, 24));
         repo.persist(entity);
         return new UrlDto(entity);
     }
@@ -59,12 +58,8 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public void deleteUrlById(String id) {
         if (ObjectId.isValid(id)) {
-            Optional<Url> url = Optional.ofNullable(repo.findById(new ObjectId(id)));
-                if(url.isEmpty()) {
-                throw new UrlNotFoundException();
-                } else {
-                    repo.deleteById(url.get().getId());
-                }     
+            var url = Optional.ofNullable(repo.findById(new ObjectId(id))).orElseThrow(UrlNotFoundException::new);
+            repo.deleteById(url.getId());
         }
     }
 
@@ -74,7 +69,7 @@ public class UrlServiceImpl implements UrlService {
         bus.sendAndForget(REDIRECT_COUNTER, url);
         return new UrlDto(url);
     }
-
+    
     @ConsumeEvent(value = REDIRECT_COUNTER)
     public void updateCounter(Url url) {
         IpDto ipDto = ipService.getByIp(requestDetails.getRemoteAddress());
@@ -83,16 +78,32 @@ public class UrlServiceImpl implements UrlService {
         url.setCount(url.getCount() + 1);
         repo.update(url);
     }
+    
+    @Override
+    public UrlDto updateUrlByShortId(String shortUrl, UrlDto dto) {
+        Optional.ofNullable(dto).ifPresent(isValidUrl);
+        var entity = checkExistence(shortUrl);
+        entity.setFullUrl(dto.getFullUrl());
+        repo.update(entity);
+        return new UrlDto(entity);
+    }
+    
+    @Override
+    public List<UrlDto> getAll(int index, int size) {
+        List<Url> urls  = repo.findAll().page(Page.of(index, size)).list();
+        return urls.stream().map(UrlDto::new).collect(Collectors.toList());
+    }
 
     private Url checkExistence(String shortUrl) {
         return repo.findByShortUrl(shortUrl).orElseThrow((UrlNotFoundException::new));
     }
 
-    private boolean isValidUrl(UrlDto url) {
+    private Consumer<UrlDto> isValidUrl = dto -> {
         String regex = "((http|https)://)(www.)?" + "[a-zA-Z0-9@:%._\\+~#?&/=]" + "{2,256}\\.[a-z]"
                 + "{2,6}\\b([-a-zA-Z0-9@:%" + "._\\+~#?&/=]*)";
-        return Objects.nonNull(url.getFullUrl()) && Pattern.matches(regex, url.getFullUrl());
-    }
+        if(! (Objects.nonNull(dto.getFullUrl()) && Pattern.matches(regex, dto.getFullUrl())) ) throw new NotValidUrlException();
+    };
+ 
 
     private List<CountryCount> updateCountryCountList(Url url, IpDto ipDto){
         final List<CountryCount> outList = new LinkedList<>();
@@ -115,4 +126,6 @@ public class UrlServiceImpl implements UrlService {
 
         return outList;
     }
+
+
 }

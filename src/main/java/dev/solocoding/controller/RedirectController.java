@@ -2,6 +2,7 @@ package dev.solocoding.controller;
 
 import java.net.URI;
 
+import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -28,6 +29,7 @@ public class RedirectController {
     }    
 
     @GET
+    @PermitAll
     @Path("/redirect/{shortUrl}")
     public Response redirect(@PathParam String shortUrl) {
         URI uri = URI.create(urlService.getAndRedirect(shortUrl).getFullUrl());
@@ -35,10 +37,10 @@ public class RedirectController {
     }
 
     @GET
+    @PermitAll
     public Response redirectToHome() {
         URI uri = URI.create(home);
         return Response.temporaryRedirect(uri).build();
     }
-
 
 }
