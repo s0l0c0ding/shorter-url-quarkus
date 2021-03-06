@@ -130,4 +130,15 @@ class UrlServiceImplTest {
         verify(ipService, times(1)).getByIp(REMOTE_IP);
         verify(repo, times(1)).update(any(Url.class));
     }
+
+    @Test
+    void updateUrlByShortIdShouldUpdate() {
+        var dto = new UrlDto();
+        dto.setFullUrl(getShortUrlStub().getFullUrl());
+        when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(getShortUrlStub()));
+        
+        urlService.updateUrlByShortId(SHORT_URL, dto);
+        
+        verify(repo, times(1)).update(any(Url.class));
+    }
 }
