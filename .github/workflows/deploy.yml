@@ -46,7 +46,8 @@ jobs:
           password: ${{ secrets.GCR_JSON_KEY }}
     - name: build
       run: |
-        docker build -f src/main/docker/Dockerfile.multistage -t gcr.io/"$PROG_ID"/shorter-url:"$RELEASE_VERSION" .
+        mvn package -Pnative
+        docker build -f src/main/docker/Dockerfile.native -t gcr.io/"$PROG_ID"/shorter-url:"$RELEASE_VERSION" .
     - name: push
       run: |
         docker push gcr.io/"$PROG_ID"/shorter-url:"$RELEASE_VERSION"
