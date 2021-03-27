@@ -15,7 +15,7 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import dev.solocoding.service.UrlService;
 
 @Path("/")
-@Produces(MediaType.TEXT_PLAIN)
+@Produces(MediaType.TEXT_HTML)
 public class RedirectController {
 
     private final UrlService urlService;
