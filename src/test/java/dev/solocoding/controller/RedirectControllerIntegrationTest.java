@@ -5,7 +5,6 @@ import static io.restassured.RestAssured.given;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.bson.types.ObjectId;
@@ -20,6 +19,8 @@ import dev.solocoding.repository.UrlRepository;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.RestAssured;
+import io.restassured.config.RestAssuredConfig;
 
 @QuarkusTest
 @TestHTTPEndpoint(RedirectController.class)
@@ -56,18 +57,18 @@ class RedirectControllerIntegrationTest {
 
     @Test
     void whenRedirectShouldSuccess() {
-        given().get("/redirect/{shortUrl}", SHORT_URL)
+        given().config(RestAssured.config().redirect(RestAssuredConfig.config().getRedirectConfig().followRedirects(false)))
+                .get("/redirect/{shortUrl}", SHORT_URL)
                 .then()
-                .statusCode(Status.OK.getStatusCode())
-                .contentType(MediaType.TEXT_HTML);
+                .statusCode(Status.TEMPORARY_REDIRECT.getStatusCode());
     }
 
 
     @Test
     void whenPathIsBlankRedirectShouldSuccess() {
-        given().get()
+        given().config(RestAssured.config().redirect(RestAssuredConfig.config().getRedirectConfig().followRedirects(false)))
+                .get()
                 .then()
-                .statusCode(Status.OK.getStatusCode())
-                .contentType(MediaType.TEXT_HTML);
+                .statusCode(Status.TEMPORARY_REDIRECT.getStatusCode());
     }
 }

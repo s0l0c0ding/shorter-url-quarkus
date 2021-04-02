@@ -116,11 +116,10 @@ public class UrlServiceImpl implements UrlService {
            IntStream.range(0, outList.size()).filter(i -> outList.get(i).getCountry().contentEquals(ipDto.getCountryCode()))
                                             .findFirst()
                                             .ifPresentOrElse(i -> {
-                                                CountryCount countryUpdate = outList.get(i);
+                                                final CountryCount countryUpdate = outList.get(i);
                                                 countryUpdate.setCount(countryUpdate.getCount() + 1);
-                                                outList.remove(i);
-                                                outList.add(countryUpdate);
-                                            }, 
+                                                outList.set(i, countryUpdate);
+                                            },
                                             ()-> outList.add(new CountryCount(ipDto.getCountryCode(), 1)));
         }
 

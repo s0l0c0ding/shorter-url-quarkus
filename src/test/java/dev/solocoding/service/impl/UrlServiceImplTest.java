@@ -41,7 +41,7 @@ class UrlServiceImplTest {
         url.setId(new ObjectId("5f6b3a94684b1858ec6b33f0"));
         url.setFullUrl("https://www.solocoding.dev");
         url.setShortUrl(SHORT_URL);
-        url.setCountryCountList(List.of(new CountryCount("US",1)));
+        url.setCountryCountList(List.of(new CountryCount("US",1), new CountryCount("IT",1)));
         url.setCount(0);
         url.setVersion(0L);
         return url;
