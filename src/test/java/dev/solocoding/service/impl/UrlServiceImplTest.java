@@ -100,6 +100,14 @@ class UrlServiceImplTest {
     }
 
     @Test
+    void shoulThrowExceptionWhenUrlLegnthIsNotValid() {
+        var dto = new UrlDto();
+        final var url = "https://www.usercoding" + "g".repeat(350)+ ".dev";
+        dto.setFullUrl(url);
+        assertThrows(NotValidUrlException.class, () -> urlService.saveUrl(dto));
+    }
+
+    @Test
     void shouldSaveUrl() {
         var dto = new UrlDto();
         dto.setFullUrl("https://www.usercoding.dev");
