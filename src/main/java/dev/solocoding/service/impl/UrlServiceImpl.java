@@ -1,11 +1,11 @@
 package dev.solocoding.service.impl;
 
+import static dev.solocoding.common.Constants.REDIRECT_COUNTER;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -17,22 +17,20 @@ import dev.solocoding.common.CountryCount;
 import dev.solocoding.dto.IpDto;
 import dev.solocoding.dto.UrlDto;
 import dev.solocoding.entity.Url;
-import dev.solocoding.exception.NotValidUrlException;
 import dev.solocoding.exception.UrlNotFoundException;
 import dev.solocoding.repository.UrlRepository;
 import dev.solocoding.service.IpService;
 import dev.solocoding.service.RequestDetails;
 import dev.solocoding.service.UrlService;
+import dev.solocoding.service.UrlValidation;
 import io.quarkus.panache.common.Page;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import lombok.RequiredArgsConstructor;
 
-import static dev.solocoding.common.Constants.REDIRECT_COUNTER;
-
 @ApplicationScoped
 @RequiredArgsConstructor
-public class UrlServiceImpl implements UrlService {
+public class UrlServiceImpl implements UrlService, UrlValidation {
 
     private final UrlRepository repo;
     private final IpService ipService;
@@ -46,7 +44,7 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public UrlDto saveUrl(UrlDto dto) {
-        Optional.ofNullable(dto).ifPresent(isValidUrl);
+        isValidUrl(dto);
         var entity = new Url(dto);
         ObjectId id = new ObjectId();
         entity.setId(id);
@@ -81,7 +79,7 @@ public class UrlServiceImpl implements UrlService {
     
     @Override
     public UrlDto updateUrlByShortId(String shortUrl, UrlDto dto) {
-        Optional.ofNullable(dto).ifPresent(isValidUrl);
+        isValidUrl(dto);
         var entity = checkExistence(shortUrl);
         entity.setFullUrl(dto.getFullUrl());
         repo.update(entity);
@@ -97,13 +95,6 @@ public class UrlServiceImpl implements UrlService {
     private Url checkExistence(String shortUrl) {
         return repo.findByShortUrl(shortUrl).orElseThrow((UrlNotFoundException::new));
     }
-
-    private Consumer<UrlDto> isValidUrl = dto -> {
-        String regex = "((http|https)://)(www.)?" + "[a-zA-Z0-9@:%._\\+~#?&/=]" + "{2,256}\\.[a-z]"
-                + "{2,6}\\b([-a-zA-Z0-9@:%" + "._\\+~#?&/=]*)";
-        if(! (Objects.nonNull(dto.getFullUrl()) && Pattern.matches(regex, dto.getFullUrl())) ) throw new NotValidUrlException();
-    };
- 
 
     private List<CountryCount> updateCountryCountList(Url url, IpDto ipDto){
         final List<CountryCount> outList = new LinkedList<>();

@@ -2,8 +2,6 @@ package dev.solocoding.controller;
 
 import static io.restassured.RestAssured.given;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 
@@ -12,7 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dev.solocoding.common.CountryCount;
 import dev.solocoding.conftest.MongoDbContainer;
 import dev.solocoding.entity.Url;
 import dev.solocoding.repository.UrlRepository;
@@ -37,12 +34,10 @@ class RedirectControllerIntegrationTest {
         url.setId(new ObjectId("5f6b3a94684b1858ec6b33f0"));
         url.setFullUrl("https://www.solocoding.dev");
         url.setShortUrl(SHORT_URL);
-        url.setCountryCountList(List.of(new CountryCount("US",1)));
         url.setCount(0);
         url.setVersion(0L);
         return url;
     }
-
 
     @BeforeEach
     void init () {
@@ -53,7 +48,6 @@ class RedirectControllerIntegrationTest {
     void clean () {
         repo.deleteAll();
     }
-
 
     @Test
     void whenRedirectShouldSuccess() {
