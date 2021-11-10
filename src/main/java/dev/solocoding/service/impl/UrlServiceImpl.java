@@ -64,7 +64,7 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
     @Override
     public UrlDto getAndRedirect(String shortUrl) {
         Url url = checkExistence(shortUrl);
-        bus.sendAndForget(REDIRECT_COUNTER, url);
+        bus.publish(REDIRECT_COUNTER, url);
         return new UrlDto(url);
     }
     

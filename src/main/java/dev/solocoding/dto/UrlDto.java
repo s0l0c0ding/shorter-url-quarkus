@@ -1,5 +1,6 @@
 package dev.solocoding.dto;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import dev.solocoding.common.CountryCount;
@@ -16,6 +17,7 @@ public class UrlDto {
     private String shortUrl;
     private List<CountryCount> countryCountList;
     private long count;
+    private ZonedDateTime expireTime;
 
     public UrlDto (Url url) {
         id = url.getId().toHexString();
@@ -23,5 +25,6 @@ public class UrlDto {
         shortUrl = url.getShortUrl();
         countryCountList = url.getCountryCountList();
         count = url.getCount();
+        expireTime = url.getExpireTime();
     }
 }

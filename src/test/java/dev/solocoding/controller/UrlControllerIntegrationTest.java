@@ -3,6 +3,7 @@ package dev.solocoding.controller;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.net.URI;
 import java.util.List;
@@ -92,16 +93,16 @@ class UrlControllerIntegrationTest {
     void saveUrlShouldSucess() {
         var dto = new UrlDto();
         dto.setFullUrl("https://solocoding.dev");
-        with()
+        var actual = with()
             .body(dto)
             .contentType(MediaType.APPLICATION_JSON)
             .post()
             .then()
             .statusCode(Status.OK.getStatusCode())
-            .contentType(MediaType.APPLICATION_JSON)
-            .log()
-            .body()
-            .body("fullUrl", is(dto.getFullUrl()));
+            .contentType(MediaType.APPLICATION_JSON).extract().as(UrlDto.class);
+        
+        assertEquals(dto.getFullUrl(), actual.getFullUrl());
+        assertNotNull(actual.getExpireTime());
     }
 
     @Test
