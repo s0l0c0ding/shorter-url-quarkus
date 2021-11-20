@@ -2,25 +2,31 @@ package dev.usercoding.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import dev.usercoding.common.CountryCount;
 import dev.usercoding.dto.IpDto;
 import dev.usercoding.dto.UrlDto;
 import dev.usercoding.entity.Url;
-import dev.usercoding.exception.NotValidUrlException;
+import dev.usercoding.exception.BadRequestException;
 import dev.usercoding.exception.UrlNotFoundException;
 import dev.usercoding.repository.UrlRepository;
 import dev.usercoding.service.RequestDetails;
@@ -66,55 +72,89 @@ class UrlServiceImplTest {
         urlService = new UrlServiceImpl(repo, ipService, requestDetails, bus);
     }
 
-    @Test
-    void shoulThrowExceptionWhenNoUrlFound() {
-        when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.empty());
-        assertThrows(UrlNotFoundException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
+    @Nested
+    @DisplayName("GetUrlByShortUrl")
+    class GetUrlByShortUrl {
+
+        @Test
+        void shoulThrowExceptionWhenNoUrlFound() {
+            when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.empty());
+            assertThrows(UrlNotFoundException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
+        }
+    
+        @Test
+        void shouldGetUrlByShortUrl() {
+            when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(getShortUrlStub()));
+            var stub = getShortUrlStub();
+            stub.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(30));
+            UrlDto expected = new UrlDto(stub);
+            assertEquals(expected.getFullUrl(), urlService.getUrlByShortUrl(SHORT_URL).getFullUrl());
+        }
+    
+        @Test
+        void shoulThrowExceptionWhenUrlIsExpired() {
+            var stub = getShortUrlStub();
+            stub.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1));
+            
+            when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(stub));
+    
+            assertThrows(BadRequestException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
+        }
+    
+        @Test
+        void shoulThrowExceptionWhenUrlIsExpiredFrom60Days() {
+            var stub = getShortUrlStub();
+            stub.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(60));
+            
+            when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(stub));
+            doNothing().when(repo).delete(stub);
+    
+            assertThrows(BadRequestException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
+        }
     }
 
-    @Test
-    void shouldGetUrlByShortUrl() {
-        when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(getShortUrlStub()));
-        UrlDto expected = new UrlDto(getShortUrlStub());
-        assertEquals(expected, urlService.getUrlByShortUrl(SHORT_URL));
-    }
+    @Nested
+    @DisplayName("SaveUrl")
+    class SaveUrl {
 
-    @Test
-    void shoulThrowExceptionWhenUrlIsEmpty() {
-        var dto = new UrlDto();
-        dto.setFullUrl(" ");
-        assertThrows(NotValidUrlException.class, () -> urlService.saveUrl(dto));
+        @Test
+        void shoulThrowExceptionWhenUrlIsEmpty() {
+            var dto = new UrlDto();
+            dto.setFullUrl(" ");
+            assertThrows(BadRequestException.class, () -> urlService.saveUrl(dto));
+        }
+    
+        @Test
+        void shoulThrowExceptionWhenUrlIsNull() {
+            var dto = new UrlDto();
+            assertThrows(BadRequestException.class, () -> urlService.saveUrl(dto));
+        }
+    
+        @Test
+        void shoulThrowExceptionWhenUrlIsNotValid() {
+            var dto = new UrlDto();
+            dto.setFullUrl("https://usercoding");
+            assertThrows(BadRequestException.class, () -> urlService.saveUrl(dto));
+        }
+    
+        @Test
+        void shoulThrowExceptionWhenUrlLegnthIsNotValid() {
+            var dto = new UrlDto();
+            final var url = "https://www.usercoding" + "g".repeat(350)+ ".dev";
+            dto.setFullUrl(url);
+            assertThrows(BadRequestException.class, () -> urlService.saveUrl(dto));
+        }
+    
+        @Test
+        void shouldSaveUrl() {
+            var dto = new UrlDto();
+            dto.setFullUrl("https://www.usercoding.dev");
+            var actual =  urlService.saveUrl(dto);
+            assertEquals(getShortUrlStub().getFullUrl(), actual.getFullUrl());
+            assertNotNull(actual.getExpireTime());
+        }
     }
-
-    @Test
-    void shoulThrowExceptionWhenUrlIsNull() {
-        var dto = new UrlDto();
-        assertThrows(NotValidUrlException.class, () -> urlService.saveUrl(dto));
-    }
-
-    @Test
-    void shoulThrowExceptionWhenUrlIsNotValid() {
-        var dto = new UrlDto();
-        dto.setFullUrl("https://usercoding");
-        assertThrows(NotValidUrlException.class, () -> urlService.saveUrl(dto));
-    }
-
-    @Test
-    void shoulThrowExceptionWhenUrlLegnthIsNotValid() {
-        var dto = new UrlDto();
-        final var url = "https://www.usercoding" + "g".repeat(350)+ ".dev";
-        dto.setFullUrl(url);
-        assertThrows(NotValidUrlException.class, () -> urlService.saveUrl(dto));
-    }
-
-    @Test
-    void shouldSaveUrl() {
-        var dto = new UrlDto();
-        dto.setFullUrl("https://www.usercoding.dev");
-        var actual =  urlService.saveUrl(dto);
-        assertEquals(getShortUrlStub().getFullUrl(), actual.getFullUrl());
-    }
-
+    
     @Test
     void deleteUrlByIdShouldThrowExceptionWhenNoUrlFound() {
         ObjectId id = getShortUrlStub().getId();

@@ -33,4 +33,12 @@ public interface UrlService {
     UrlDto updateUrlByShortId(String shortUrl, UrlDto dto);
 
 	List<UrlDto> getAll(int index, int size);
+
+   /**
+    * Will extend the expiration date by n days from today
+    * @param shortUrl
+    * @param days
+    * @return UrlDto
+    */
+    UrlDto extendExpiretion(String shortUrl, long days);
 }
