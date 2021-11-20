@@ -4,7 +4,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.types.ObjectId;
 
 import dev.solocoding.common.CountryCount;
@@ -14,7 +13,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@BsonDiscriminator
 public class Url {
 
     private ObjectId id;
@@ -33,9 +31,5 @@ public class Url {
         count = url.getCount();
         this.expireTime = ZonedDateTime.now(ZoneOffset.UTC).plusDays(30l);
     }
-
-    // public boolean isExpired() {
-    //     return this.expireTime.isAfter(ZonedDateTime.now(ZoneOffset.UTC));
-    // }
 
 }

@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.net.URI;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -37,6 +40,7 @@ import org.junit.jupiter.api.Test;
 class UrlControllerIntegrationTest {
     
     private final static String SHORT_URL = "6GGfP2";
+    private final static String SHORT_URL_EXPIRED = "EXPIRED";
 
     @Inject
     UrlRepository repo;
@@ -48,6 +52,19 @@ class UrlControllerIntegrationTest {
         url.setShortUrl(SHORT_URL);
         url.setCountryCountList(List.of(new CountryCount("US",1)));
         url.setCount(0);
+        url.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(10));
+        url.setVersion(0L);
+        return url;
+    }
+
+    private Url getExpiredShortUrl() {
+        Url url = new Url();
+        url.setId(new ObjectId());
+        url.setFullUrl("https://www.expired.dev");
+        url.setShortUrl(SHORT_URL_EXPIRED);
+        url.setCountryCountList(List.of(new CountryCount("US",1)));
+        url.setCount(0);
+        url.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(65));
         url.setVersion(0L);
         return url;
     }
@@ -55,7 +72,7 @@ class UrlControllerIntegrationTest {
 
     @BeforeEach
     void init () {
-        repo.persist(getShortUrl());
+        repo.persist(getShortUrl(), getExpiredShortUrl());
     }
 
     @AfterEach
@@ -74,6 +91,18 @@ class UrlControllerIntegrationTest {
             .body()
             .body("id", is(getShortUrl().getId().toHexString()))
             .body("fullUrl", is(getShortUrl().getFullUrl()));
+    }
+
+
+    @Test
+    void getUrlByShortUrlShouldFailWith400() {
+        given()
+            .get("/{shortUrl}", SHORT_URL_EXPIRED)
+            .then()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON)
+            .log();
+        assertEquals(1, repo.count());
     }
 
     @Test
@@ -152,7 +181,7 @@ class UrlControllerIntegrationTest {
             .delete("/{id}", getShortUrl().getId().toHexString())
             .then()
             .statusCode(Status.NO_CONTENT.getStatusCode());
-        assertEquals(0, repo.count());
+        assertEquals(1, repo.count());
     }
 
     @Test
@@ -161,5 +190,18 @@ class UrlControllerIntegrationTest {
             .delete("/{id}","6f6b3a94684b1858ec6b33f1")
             .then()
             .statusCode(Status.NOT_FOUND.getStatusCode());
+    }
+
+    @Test
+    void patchUrlShouldSucess() {
+        var actual = with()
+            .contentType(MediaType.APPLICATION_JSON)
+            .patch("/{id}/extend", getShortUrl().getShortUrl())
+            .then()
+            .statusCode(Status.OK.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON).extract().as(UrlDto.class);
+        
+        assertNotNull(actual.getExpireTime());
+        assertEquals(30l, ZonedDateTime.now(ZoneOffset.UTC).until(actual.getExpireTime().plusDays(1), ChronoUnit.DAYS));
     }
 }

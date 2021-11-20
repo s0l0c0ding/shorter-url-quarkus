@@ -2,6 +2,8 @@ package dev.solocoding.service.impl;
 
 import static dev.solocoding.common.Constants.REDIRECT_COUNTER;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +19,8 @@ import dev.solocoding.common.CountryCount;
 import dev.solocoding.dto.IpDto;
 import dev.solocoding.dto.UrlDto;
 import dev.solocoding.entity.Url;
+import dev.solocoding.exception.BadRequestEnum;
+import dev.solocoding.exception.BadRequestException;
 import dev.solocoding.exception.UrlNotFoundException;
 import dev.solocoding.repository.UrlRepository;
 import dev.solocoding.service.IpService;
@@ -39,7 +43,9 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
 
     @Override
     public UrlDto getUrlByShortUrl(String shortUrl) {
-        return new UrlDto(checkExistence(shortUrl));
+        Url url = checkExistence(shortUrl);
+        checkExpireDateAndDeleteIfOneMonth(url);
+        return new UrlDto(url);
     }
 
     @Override
@@ -64,6 +70,7 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
     @Override
     public UrlDto getAndRedirect(String shortUrl) {
         Url url = checkExistence(shortUrl);
+        checkExpireDateAndDeleteIfOneMonth(url);
         bus.publish(REDIRECT_COUNTER, url);
         return new UrlDto(url);
     }
@@ -81,6 +88,7 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
     public UrlDto updateUrlByShortId(String shortUrl, UrlDto dto) {
         isValidUrl(dto);
         var entity = checkExistence(shortUrl);
+        checkExpireDateAndDeleteIfOneMonth(entity);
         entity.setFullUrl(dto.getFullUrl());
         repo.update(entity);
         return new UrlDto(entity);
@@ -117,5 +125,19 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
         return outList;
     }
 
+    private void checkExpireDateAndDeleteIfOneMonth(Url url) {
+        if(isEXpireTimeAfterDays(url.getExpireTime(), 60l)) {
+            repo.delete(url);
+            throw new BadRequestException(BadRequestEnum.EXPIRED_DELETED);
+        }
+        if(isEXpireTimeAfterDays(url.getExpireTime(), 1l)) throw new BadRequestException(BadRequestEnum.EXPIRED_URL.getDescription().concat(url.getExpireTime().toString()));
+    }
 
+    @Override
+    public UrlDto extendExpiretion(String shortUrl, long days) {
+        var url  = checkExistence(shortUrl);
+        url.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(days));
+        repo.update(url);
+        return new UrlDto(url);
+    }
 }
