@@ -19,9 +19,8 @@ import dev.solocoding.common.CountryCount;
 import dev.solocoding.dto.IpDto;
 import dev.solocoding.dto.UrlDto;
 import dev.solocoding.entity.Url;
-import dev.solocoding.exception.BadRequestEnum;
-import dev.solocoding.exception.BadRequestException;
-import dev.solocoding.exception.UrlNotFoundException;
+import dev.solocoding.exception.ServiceException;
+import dev.solocoding.exception.ServiceExceptionEnum;
 import dev.solocoding.repository.UrlRepository;
 import dev.solocoding.service.IpService;
 import dev.solocoding.service.RequestDetails;
@@ -62,7 +61,7 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
     @Override
     public void deleteUrlById(String id) {
         if (ObjectId.isValid(id)) {
-            var url = Optional.ofNullable(repo.findById(new ObjectId(id))).orElseThrow(UrlNotFoundException::new);
+            var url = Optional.ofNullable(repo.findById(new ObjectId(id))).orElseThrow(() -> new ServiceException(ServiceExceptionEnum.URL_NOT_FOUND));
             repo.deleteById(url.getId());
         }
     }
@@ -101,7 +100,7 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
     }
 
     private Url checkExistence(String shortUrl) {
-        return repo.findByShortUrl(shortUrl).orElseThrow((UrlNotFoundException::new));
+        return repo.findByShortUrl(shortUrl).orElseThrow(() -> new ServiceException(ServiceExceptionEnum.URL_NOT_FOUND));
     }
 
     private List<CountryCount> updateCountryCountList(Url url, IpDto ipDto){
@@ -128,13 +127,13 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
     private void checkExpireDateAndDeleteIfOneMonth(Url url) {
         if(isEXpireTimeAfterDays(url.getExpireTime(), 60l)) {
             repo.delete(url);
-            throw new BadRequestException(BadRequestEnum.EXPIRED_DELETED);
+            throw new ServiceException(ServiceExceptionEnum.EXPIRED_DELETED);
         }
-        if(isEXpireTimeAfterDays(url.getExpireTime(), 1l)) throw new BadRequestException(BadRequestEnum.EXPIRED_URL.getDescription().concat(url.getExpireTime().toString()));
+        if(isEXpireTimeAfterDays(url.getExpireTime(), 1l)) throw new ServiceException(ServiceExceptionEnum.EXPIRED_URL, url.getExpireTime().toString());
     }
 
     @Override
-    public UrlDto extendExpiretion(String shortUrl, long days) {
+    public UrlDto extendExpiration(String shortUrl, long days) {
         var url  = checkExistence(shortUrl);
         url.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(days));
         repo.update(url);

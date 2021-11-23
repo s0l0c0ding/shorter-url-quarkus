@@ -23,6 +23,8 @@ import dev.solocoding.common.CountryCount;
 import dev.solocoding.conftest.MongoDbContainer;
 import dev.solocoding.dto.UrlDto;
 import dev.solocoding.entity.Url;
+import dev.solocoding.exception.ServiceExceptionEnum;
+import dev.solocoding.exception.error.ApiError;
 import dev.solocoding.repository.UrlRepository;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
@@ -95,14 +97,15 @@ class UrlControllerIntegrationTest {
 
 
     @Test
-    void getUrlByShortUrlShouldFailWith400() {
-        given()
+    void getUrlByShortUrlShouldFailWith400WhenUrlIsExpired() {
+        var actual = with()
             .get("/{shortUrl}", SHORT_URL_EXPIRED)
             .then()
             .statusCode(Status.BAD_REQUEST.getStatusCode())
-            .contentType(MediaType.APPLICATION_JSON)
-            .log();
+            .contentType(MediaType.APPLICATION_JSON).extract().as(ApiError.class);
         assertEquals(1, repo.count());
+        assertEquals(ServiceExceptionEnum.EXPIRED_DELETED.getCode(), actual.getCode());
+        assertEquals(ServiceExceptionEnum.EXPIRED_DELETED.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -135,15 +138,18 @@ class UrlControllerIntegrationTest {
     }
 
     @Test
-    void saveUrlShouldFailWiht400() {
+    void saveUrlShouldFailWiht400WhenUrlIsInvalid() {
         var dto = new UrlDto();
         dto.setFullUrl("http//solocoding");
-        with()
+        var actual = with()
             .body(dto)
             .contentType(MediaType.APPLICATION_JSON)
             .post()
             .then()
-            .statusCode(Status.BAD_REQUEST.getStatusCode());
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON).extract().as(ApiError.class);
+        assertEquals(ServiceExceptionEnum.NOT_VALID_URL.getCode(), actual.getCode());
+        assertEquals(ServiceExceptionEnum.NOT_VALID_URL.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -164,15 +170,18 @@ class UrlControllerIntegrationTest {
 
 
     @Test
-    void updateUrlByShortIdShouldFailWith400() {
+    void updateUrlByShortIdShouldFailWith400WhenUrlIsInvalid() {
         var dto = new UrlDto();
         dto.setFullUrl("quarkus.io");
-        with()
+        var actual = with()
             .body(dto)
             .contentType(MediaType.APPLICATION_JSON)
             .put("/{shortUrl}", SHORT_URL)
             .then()
-            .statusCode(Status.BAD_REQUEST.getStatusCode());
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON).extract().as(ApiError.class);
+        assertEquals(ServiceExceptionEnum.NOT_VALID_URL.getCode(), actual.getCode());
+        assertEquals(ServiceExceptionEnum.NOT_VALID_URL.getDescription(), actual.getDescription());;
     }
 
     @Test
@@ -185,11 +194,14 @@ class UrlControllerIntegrationTest {
     }
 
     @Test
-    void deleteUrlByIdShoulFailWith404() {
-        with()
+    void deleteUrlByIdShoulFailWith404WhenNoUrlIsFound() {
+        var actual = with()
             .delete("/{id}","6f6b3a94684b1858ec6b33f1")
             .then()
-            .statusCode(Status.NOT_FOUND.getStatusCode());
+            .statusCode(Status.NOT_FOUND.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON).extract().as(ApiError.class);
+        assertEquals(ServiceExceptionEnum.URL_NOT_FOUND.getCode(), actual.getCode());
+        assertEquals(ServiceExceptionEnum.URL_NOT_FOUND.getDescription(), actual.getDescription());
     }
 
     @Test

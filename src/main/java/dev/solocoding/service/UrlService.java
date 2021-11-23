@@ -40,5 +40,5 @@ public interface UrlService {
     * @param days
     * @return UrlDto
     */
-    UrlDto extendExpiretion(String shortUrl, long days);
+    UrlDto extendExpiration(String shortUrl, long days);
 }

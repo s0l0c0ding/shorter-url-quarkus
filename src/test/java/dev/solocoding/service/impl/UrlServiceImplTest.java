@@ -26,8 +26,7 @@ import dev.solocoding.common.CountryCount;
 import dev.solocoding.dto.IpDto;
 import dev.solocoding.dto.UrlDto;
 import dev.solocoding.entity.Url;
-import dev.solocoding.exception.BadRequestException;
-import dev.solocoding.exception.UrlNotFoundException;
+import dev.solocoding.exception.ServiceException;
 import dev.solocoding.repository.UrlRepository;
 import dev.solocoding.service.RequestDetails;
 import io.vertx.mutiny.core.eventbus.EventBus;
@@ -79,7 +78,7 @@ class UrlServiceImplTest {
         @Test
         void shoulThrowExceptionWhenNoUrlFound() {
             when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.empty());
-            assertThrows(UrlNotFoundException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
+            assertThrows(ServiceException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
         }
     
         @Test
@@ -98,7 +97,7 @@ class UrlServiceImplTest {
             
             when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(stub));
     
-            assertThrows(BadRequestException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
+            assertThrows(ServiceException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
         }
     
         @Test
@@ -109,7 +108,7 @@ class UrlServiceImplTest {
             when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(stub));
             doNothing().when(repo).delete(stub);
     
-            assertThrows(BadRequestException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
+            assertThrows(ServiceException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
         }
     }
 
@@ -121,20 +120,20 @@ class UrlServiceImplTest {
         void shoulThrowExceptionWhenUrlIsEmpty() {
             var dto = new UrlDto();
             dto.setFullUrl(" ");
-            assertThrows(BadRequestException.class, () -> urlService.saveUrl(dto));
+            assertThrows(ServiceException.class, () -> urlService.saveUrl(dto));
         }
     
         @Test
         void shoulThrowExceptionWhenUrlIsNull() {
             var dto = new UrlDto();
-            assertThrows(BadRequestException.class, () -> urlService.saveUrl(dto));
+            assertThrows(ServiceException.class, () -> urlService.saveUrl(dto));
         }
     
         @Test
         void shoulThrowExceptionWhenUrlIsNotValid() {
             var dto = new UrlDto();
             dto.setFullUrl("https://solocoding");
-            assertThrows(BadRequestException.class, () -> urlService.saveUrl(dto));
+            assertThrows(ServiceException.class, () -> urlService.saveUrl(dto));
         }
     
         @Test
@@ -142,7 +141,7 @@ class UrlServiceImplTest {
             var dto = new UrlDto();
             final var url = "https://www.solocoding" + "g".repeat(350)+ ".dev";
             dto.setFullUrl(url);
-            assertThrows(BadRequestException.class, () -> urlService.saveUrl(dto));
+            assertThrows(ServiceException.class, () -> urlService.saveUrl(dto));
         }
     
         @Test
@@ -159,7 +158,7 @@ class UrlServiceImplTest {
     void deleteUrlByIdShouldThrowExceptionWhenNoUrlFound() {
         ObjectId id = getShortUrlStub().getId();
         when(repo.findById(id)).thenReturn(null);
-        assertThrows(UrlNotFoundException.class, () -> urlService.deleteUrlById("5f6b3a94684b1858ec6b33f0"));
+        assertThrows(ServiceException.class, () -> urlService.deleteUrlById("5f6b3a94684b1858ec6b33f0"));
     }
 
     @Test
