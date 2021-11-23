@@ -59,8 +59,8 @@ public class UrlController {
 
     @PATCH
     @Path("/{shortUrl}/extend")
-    public UrlDto extendExpiretionByOnMonth(@PathParam String shortUrl) {
-        return urlService.extendExpiretion(shortUrl, 30);
+    public UrlDto extendExpirationByOnMonth(@PathParam String shortUrl) {
+        return urlService.extendExpiration(shortUrl, 30);
     }
 
 }

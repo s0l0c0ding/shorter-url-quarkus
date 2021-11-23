@@ -33,3 +33,9 @@ GET {{baseUrl}}/url?index=0&size=10 HTTP/1.1
 Accept: application/json
 Authorization: {{auth}}
 #################################
+PATCH  {{baseUrl}}/url/{{shortUrl}}/extend HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Authorization: {{auth}}
+
+{}
