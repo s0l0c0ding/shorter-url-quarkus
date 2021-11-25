@@ -1,0 +1,212 @@
+openapi: 3.1.3
+info:
+  title: shorten url
+  version: "0.51"
+paths:
+  /redirect/{shortUrl}:
+    get:
+      description: Redirect the end user to the fullUrl  to register statics
+      tags:
+      - Redirect Controller
+      parameters:
+      - name: shortUrl
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /url:
+    post:
+      description: Make a new short URL by providing the full URL in the payload
+      tags:
+      - Url Controller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FullUrlDto'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlDto'
+        "400":
+          description: NOT_VALID_URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - admin
+  /url/{shortUrl}:
+    get:
+      description: Get URL details by the Short URL
+      tags:
+      - Url Controller
+      parameters:
+      - name: shortUrl
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlDto'
+        "400":
+          description: EXPIRED_URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        "404":
+          description: URL_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - admin
+    put:
+      description: Update the fullUrl for a given short one
+      tags:
+      - Url Controller
+      parameters:
+      - name: shortUrl
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FullUrlDto'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlDto'
+        "400":
+          description: EXPIRED_URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        "404":
+          description: URL_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - admin
+  /url/{shortUrl}/extend:
+    patch:
+      description: Extend  the URL expiration  by 30 days from now
+      tags:
+      - Url Controller
+      parameters:
+      - name: shortUrl
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlDto'
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - admin
+components:
+  schemas:
+    CountryCount:
+      type: object
+      properties:
+        country:
+          type: string
+          description: The country Alpha-2 code  as described in the ISO 3166 international standard 
+        count:
+          format: int32
+          type: integer
+          description: Total count of visits 
+    UrlDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: unique id 
+        fullUrl:
+          type: string
+          description: The full URL to be shorten with total length of 350 chars
+        shortUrl:
+          type: string
+          description: The shorten URL  
+        countryCountList:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryCount'
+        count:
+          format: int64
+          type: integer
+          description: Total count of visits 
+        expireTime:
+          format: date-time
+          type: string
+          description: The expire time after which the URL will not be accessible
+    FullUrlDto:
+      type: object
+      properties:
+        fullUrl:
+          type: string
+          description: The full URL to be shorten with total length of 350 chars
+    ApiError:
+      type: object
+      properties:
+        code:
+          format: int64
+          type: integer
+          description: Internal code 
+        name:
+          type: string
+          description: Error name 
+        description:
+          type: string
+          description: Error description
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      description: Authentication
+      scheme: basic
