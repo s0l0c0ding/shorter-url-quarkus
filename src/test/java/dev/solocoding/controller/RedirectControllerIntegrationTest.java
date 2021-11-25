@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dev.solocoding.common.Constants;
 import dev.solocoding.conftest.MongoDbContainer;
 import dev.solocoding.entity.Url;
 import dev.solocoding.repository.UrlRepository;
@@ -65,4 +66,14 @@ class RedirectControllerIntegrationTest {
                 .then()
                 .statusCode(Status.TEMPORARY_REDIRECT.getStatusCode());
     }
+
+    @Test
+    void whenRedirectWithMultipleIPShouldSuccess() {
+        given().config(RestAssured.config().redirect(RestAssuredConfig.config().getRedirectConfig().followRedirects(false)))
+                .header(Constants.FORWARDED_HEADER, "184.73.132.126, 23.23.103.207")
+                .get("/redirect/{shortUrl}", SHORT_URL)
+                .then()
+                .statusCode(Status.TEMPORARY_REDIRECT.getStatusCode());
+    }
+
 }

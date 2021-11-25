@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class UrlDto {
-    
+
     private String id;
     private String fullUrl;
     private String shortUrl;

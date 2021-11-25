@@ -37,7 +37,7 @@ public class IpServiceImpl implements IpService {
                 result |= ip << (x << 3);
             }
         } catch (Exception e) {
-            log.error("converting ip adress: {}", ipString);
+            log.error("converting ip adress: {}  cause: {}", ipString, e.getMessage());
         }
 
         return result;

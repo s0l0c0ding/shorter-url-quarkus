@@ -20,7 +20,7 @@ jobs:
       run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
     - name: app-prop
       env:
-        APP_PROP: ${{ secrets.APP_PROP }}
+        APP_PROP: ${{ secrets.APP_PROP_SEC }}
       run: |
         echo "$APP_PROP" | base64 -d > "$APPLICATION_FILE"
     - name: Set up JDK 11

@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 
 
 @QuarkusTest
-@TestSecurity(user = "testUser", roles = {"admin"})
+@TestSecurity(user = "testUser", roles = {"user", "admin"})
 @TestHTTPEndpoint(UrlController.class)
 @QuarkusTestResource(MongoDbContainer.class)
 class UrlControllerIntegrationTest {
@@ -130,7 +130,7 @@ class UrlControllerIntegrationTest {
             .contentType(MediaType.APPLICATION_JSON)
             .post()
             .then()
-            .statusCode(Status.OK.getStatusCode())
+            .statusCode(Status.CREATED.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON).extract().as(UrlDto.class);
         
         assertEquals(dto.getFullUrl(), actual.getFullUrl());
