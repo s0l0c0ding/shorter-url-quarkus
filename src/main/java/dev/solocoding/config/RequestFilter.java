@@ -10,7 +10,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
 import dev.usercoding.common.Constants;
-import dev.usercoding.service.RequestDetails;
+import dev.usercoding.components.request.service.RequestDetails;
 import io.vertx.core.http.HttpServerRequest;
 import lombok.extern.slf4j.Slf4j;
 

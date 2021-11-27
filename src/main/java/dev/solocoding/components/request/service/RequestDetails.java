@@ -1,4 +1,4 @@
-package dev.usercoding.service;
+package dev.usercoding.components.request.service;
 
 import io.vertx.core.http.HttpServerRequest;
 

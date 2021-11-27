@@ -1,4 +1,4 @@
-package dev.usercoding.entity;
+package dev.usercoding.components.ip.entity;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;

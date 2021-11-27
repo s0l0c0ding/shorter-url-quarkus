@@ -1,9 +1,8 @@
-package dev.usercoding.service.impl;
+package dev.usercoding.components.request.service;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
-import dev.usercoding.service.RequestDetails;
 import io.vertx.core.http.HttpServerRequest;
 
 @ApplicationScoped

@@ -1,11 +1,10 @@
-package dev.usercoding.repository.impl;
+package dev.usercoding.components.ip.repository;
 
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import dev.usercoding.entity.Ip;
-import dev.usercoding.repository.IpRepository;
+import dev.usercoding.components.ip.entity.Ip;
 
 @ApplicationScoped
 public class IpRepositoryImpl implements IpRepository {

@@ -18,8 +18,8 @@ import javax.ws.rs.core.Response.Status;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
-import dev.usercoding.dto.UrlDto;
-import dev.usercoding.service.UrlService;
+import dev.usercoding.components.url.dto.UrlDto;
+import dev.usercoding.components.url.service.UrlService;
 import lombok.RequiredArgsConstructor;
 
 @Path("/url")

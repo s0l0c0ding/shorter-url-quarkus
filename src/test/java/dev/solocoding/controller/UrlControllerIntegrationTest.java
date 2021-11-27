@@ -20,12 +20,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import dev.usercoding.common.CountryCount;
+import dev.usercoding.components.url.dto.UrlDto;
+import dev.usercoding.components.url.entity.Url;
+import dev.usercoding.components.url.repository.UrlRepository;
 import dev.usercoding.conftest.MongoDbContainer;
-import dev.usercoding.dto.UrlDto;
-import dev.usercoding.entity.Url;
 import dev.usercoding.exception.ServiceExceptionEnum;
 import dev.usercoding.exception.error.ApiError;
-import dev.usercoding.repository.UrlRepository;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;

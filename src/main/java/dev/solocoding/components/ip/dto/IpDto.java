@@ -1,6 +1,6 @@
-package dev.usercoding.dto;
+package dev.usercoding.components.ip.dto;
 
-import dev.usercoding.entity.Ip;
+import dev.usercoding.components.ip.entity.Ip;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -1,4 +1,4 @@
-package dev.usercoding.service.impl;
+package dev.usercoding.components.url.service;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,12 +23,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import dev.usercoding.common.CountryCount;
-import dev.usercoding.dto.IpDto;
-import dev.usercoding.dto.UrlDto;
-import dev.usercoding.entity.Url;
+import dev.usercoding.components.ip.dto.IpDto;
+import dev.usercoding.components.ip.service.IpServiceImpl;
+import dev.usercoding.components.request.service.RequestDetails;
+import dev.usercoding.components.request.service.RequestDetailsImpl;
+import dev.usercoding.components.url.dto.UrlDto;
+import dev.usercoding.components.url.entity.Url;
+import dev.usercoding.components.url.repository.UrlRepository;
+import dev.usercoding.components.url.service.impl.UrlServiceImpl;
 import dev.usercoding.exception.ServiceException;
-import dev.usercoding.repository.UrlRepository;
-import dev.usercoding.service.RequestDetails;
 import io.vertx.mutiny.core.eventbus.EventBus;
 
 class UrlServiceImplTest {

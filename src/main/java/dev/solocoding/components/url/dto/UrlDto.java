@@ -1,35 +1,30 @@
-package dev.usercoding.entity;
+package dev.usercoding.components.url.dto;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
 import dev.usercoding.common.CountryCount;
-import dev.usercoding.dto.UrlDto;
+import dev.usercoding.components.url.entity.Url;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class Url {
+public class UrlDto {
 
-    private ObjectId id;
+    private String id;
     private String fullUrl;
     private String shortUrl;
     private List<CountryCount> countryCountList;
     private long count;
-    private Long version;
     private ZonedDateTime expireTime;
 
-    public Url (UrlDto url) {
-        id =  url.getId() != null?  new ObjectId(url.getId()) : null;
+    public UrlDto (Url url) {
+        id = url.getId().toHexString();
         fullUrl = url.getFullUrl();
         shortUrl = url.getShortUrl();
         countryCountList = url.getCountryCountList();
         count = url.getCount();
-        this.expireTime = ZonedDateTime.now(ZoneOffset.UTC).plusDays(30l);
+        expireTime = url.getExpireTime();
     }
-
 }

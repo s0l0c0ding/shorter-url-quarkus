@@ -1,13 +1,12 @@
-package dev.usercoding.service.impl;
+package dev.usercoding.components.ip.service;
 
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import dev.usercoding.dto.IpDto;
-import dev.usercoding.entity.Ip;
-import dev.usercoding.repository.IpRepository;
-import dev.usercoding.service.IpService;
+import dev.usercoding.components.ip.dto.IpDto;
+import dev.usercoding.components.ip.entity.Ip;
+import dev.usercoding.components.ip.repository.IpRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

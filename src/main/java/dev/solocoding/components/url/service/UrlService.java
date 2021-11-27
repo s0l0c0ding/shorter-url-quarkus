@@ -1,8 +1,8 @@
-package dev.usercoding.service;
+package dev.usercoding.components.url.service;
 
 import java.util.List;
 
-import dev.usercoding.dto.UrlDto;
+import dev.usercoding.components.url.dto.UrlDto;
 
 public interface UrlService {
     

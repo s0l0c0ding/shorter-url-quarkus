@@ -1,4 +1,4 @@
-package dev.usercoding.service.impl;
+package dev.usercoding.components.url.service.impl;
 
 import static dev.usercoding.common.Constants.REDIRECT_COUNTER;
 
@@ -16,16 +16,16 @@ import javax.enterprise.context.ApplicationScoped;
 import org.bson.types.ObjectId;
 
 import dev.usercoding.common.CountryCount;
-import dev.usercoding.dto.IpDto;
-import dev.usercoding.dto.UrlDto;
-import dev.usercoding.entity.Url;
+import dev.usercoding.components.ip.dto.IpDto;
+import dev.usercoding.components.ip.service.IpService;
+import dev.usercoding.components.request.service.RequestDetails;
+import dev.usercoding.components.url.dto.UrlDto;
+import dev.usercoding.components.url.entity.Url;
+import dev.usercoding.components.url.repository.UrlRepository;
+import dev.usercoding.components.url.service.UrlService;
+import dev.usercoding.components.url.service.UrlValidation;
 import dev.usercoding.exception.ServiceException;
 import dev.usercoding.exception.ServiceExceptionEnum;
-import dev.usercoding.repository.UrlRepository;
-import dev.usercoding.service.IpService;
-import dev.usercoding.service.RequestDetails;
-import dev.usercoding.service.UrlService;
-import dev.usercoding.service.UrlValidation;
 import io.quarkus.panache.common.Page;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.mutiny.core.eventbus.EventBus;
