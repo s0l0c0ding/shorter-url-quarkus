@@ -1,4 +1,4 @@
-package dev.solocoding.service.impl;
+package dev.solocoding.components.url.service.impl;
 
 import static dev.solocoding.common.Constants.REDIRECT_COUNTER;
 
@@ -16,16 +16,16 @@ import javax.enterprise.context.ApplicationScoped;
 import org.bson.types.ObjectId;
 
 import dev.solocoding.common.CountryCount;
-import dev.solocoding.dto.IpDto;
-import dev.solocoding.dto.UrlDto;
-import dev.solocoding.entity.Url;
+import dev.solocoding.components.ip.dto.IpDto;
+import dev.solocoding.components.ip.service.IpService;
+import dev.solocoding.components.request.service.RequestDetails;
+import dev.solocoding.components.url.dto.UrlDto;
+import dev.solocoding.components.url.entity.Url;
+import dev.solocoding.components.url.repository.UrlRepository;
+import dev.solocoding.components.url.service.UrlService;
+import dev.solocoding.components.url.service.UrlValidation;
 import dev.solocoding.exception.ServiceException;
 import dev.solocoding.exception.ServiceExceptionEnum;
-import dev.solocoding.repository.UrlRepository;
-import dev.solocoding.service.IpService;
-import dev.solocoding.service.RequestDetails;
-import dev.solocoding.service.UrlService;
-import dev.solocoding.service.UrlValidation;
 import io.quarkus.panache.common.Page;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.mutiny.core.eventbus.EventBus;

@@ -1,4 +1,4 @@
-package dev.solocoding.service;
+package dev.solocoding.components.url.service;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -6,7 +6,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import dev.solocoding.dto.UrlDto;
+import dev.solocoding.components.url.dto.UrlDto;
 import dev.solocoding.exception.ServiceException;
 import dev.solocoding.exception.ServiceExceptionEnum;
 

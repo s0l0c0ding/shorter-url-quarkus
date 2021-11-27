@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
-import dev.solocoding.service.UrlService;
+import dev.solocoding.components.url.service.UrlService;
 
 @Path("/")
 @Produces(MediaType.TEXT_HTML)

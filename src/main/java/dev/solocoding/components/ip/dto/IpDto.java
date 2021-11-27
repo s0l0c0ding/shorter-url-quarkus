@@ -1,6 +1,6 @@
-package dev.solocoding.dto;
+package dev.solocoding.components.ip.dto;
 
-import dev.solocoding.entity.Ip;
+import dev.solocoding.components.ip.entity.Ip;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

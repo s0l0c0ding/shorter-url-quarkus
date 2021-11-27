@@ -1,11 +1,10 @@
-package dev.solocoding.repository.impl;
+package dev.solocoding.components.ip.repository;
 
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import dev.solocoding.entity.Ip;
-import dev.solocoding.repository.IpRepository;
+import dev.solocoding.components.ip.entity.Ip;
 
 @ApplicationScoped
 public class IpRepositoryImpl implements IpRepository {

@@ -1,4 +1,4 @@
-package dev.solocoding.entity;
+package dev.solocoding.components.url.entity;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -7,7 +7,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import dev.solocoding.common.CountryCount;
-import dev.solocoding.dto.UrlDto;
+import dev.solocoding.components.url.dto.UrlDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

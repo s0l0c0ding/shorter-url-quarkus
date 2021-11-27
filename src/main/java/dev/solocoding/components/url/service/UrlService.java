@@ -1,8 +1,8 @@
-package dev.solocoding.service;
+package dev.solocoding.components.url.service;
 
 import java.util.List;
 
-import dev.solocoding.dto.UrlDto;
+import dev.solocoding.components.url.dto.UrlDto;
 
 public interface UrlService {
     

@@ -1,4 +1,4 @@
-package dev.solocoding.service;
+package dev.solocoding.components.request.service;
 
 import io.vertx.core.http.HttpServerRequest;
 

@@ -1,9 +1,8 @@
-package dev.solocoding.service.impl;
+package dev.solocoding.components.request.service;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
-import dev.solocoding.service.RequestDetails;
 import io.vertx.core.http.HttpServerRequest;
 
 @ApplicationScoped

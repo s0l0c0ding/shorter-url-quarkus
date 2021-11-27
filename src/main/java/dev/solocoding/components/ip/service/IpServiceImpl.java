@@ -1,13 +1,12 @@
-package dev.solocoding.service.impl;
+package dev.solocoding.components.ip.service;
 
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import dev.solocoding.dto.IpDto;
-import dev.solocoding.entity.Ip;
-import dev.solocoding.repository.IpRepository;
-import dev.solocoding.service.IpService;
+import dev.solocoding.components.ip.dto.IpDto;
+import dev.solocoding.components.ip.entity.Ip;
+import dev.solocoding.components.ip.repository.IpRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
