@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class MongoDbContainer implements QuarkusTestResourceLifecycleManager {
     
-    public static final String DEFAULT_IMAGE_AND_TAG = "mongo:bionic";
+    public static final String DEFAULT_IMAGE_AND_TAG = "mongo";
     public static final String MONGODB_HOST = "localhost";
     public static final int MONGODB_PORT = 27017;
 

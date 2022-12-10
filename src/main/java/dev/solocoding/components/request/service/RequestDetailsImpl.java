@@ -1,6 +1,5 @@
 package dev.solocoding.components.request.service;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 import io.vertx.core.http.HttpServerRequest;
@@ -12,7 +11,6 @@ public class RequestDetailsImpl implements RequestDetails {
     private String callerIp;
 
     @Override
-    @PostConstruct
     public void setRequest(HttpServerRequest request, String callerIp) {
         this.request = request;
         this.callerIp = callerIp;

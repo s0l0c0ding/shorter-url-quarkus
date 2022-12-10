@@ -1,5 +1,7 @@
 package dev.solocoding.controller;
 
+import static dev.solocoding.common.Constants.PATH_PARAM_SHORT_URL;
+
 import java.net.URI;
 
 import javax.annotation.security.PermitAll;
@@ -31,7 +33,7 @@ public class RedirectController {
     @GET
     @PermitAll
     @Path("/redirect/{shortUrl}")
-    public Response redirect(@PathParam String shortUrl) {
+    public Response redirect(@PathParam(PATH_PARAM_SHORT_URL) String shortUrl) {
         URI uri = URI.create(urlService.getAndRedirect(shortUrl).getFullUrl());
         return Response.temporaryRedirect(uri).build();
     }

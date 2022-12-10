@@ -1,5 +1,7 @@
 package dev.solocoding.controller;
 
+import static dev.solocoding.common.Constants.PATH_PARAM_SHORT_URL;
+
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -33,13 +35,13 @@ public class UrlController {
 
     @GET
     @Path("/{shortUrl}")
-    public UrlDto getUrlByShortUrl(@PathParam String shortUrl) {
+    public UrlDto getUrlByShortUrl(@PathParam(PATH_PARAM_SHORT_URL) String shortUrl) {
         return urlService.getUrlByShortUrl(shortUrl);
     }
 
     @GET
     @RolesAllowed("admin")
-    public List<UrlDto> getAll(@QueryParam int index, @QueryParam int size) {
+    public List<UrlDto> getAll(@QueryParam("index") int index, @QueryParam("size") int size) {
         return urlService.getAll(index, size);
     }
 
@@ -50,20 +52,20 @@ public class UrlController {
 
     @PUT
     @Path("/{shortUrl}")
-    public UrlDto updateUrlByShortId(@PathParam String shortUrl, UrlDto dto) {
+    public UrlDto updateUrlByShortId(@PathParam(PATH_PARAM_SHORT_URL) String shortUrl, UrlDto dto) {
         return urlService.updateUrlByShortId(shortUrl, dto);
     }
 
     @DELETE
     @Path("/{id}")
     @RolesAllowed("admin")
-    public void deleteUrlById(@PathParam String id) {
+    public void deleteUrlById(@PathParam("id") String id) {
         urlService.deleteUrlById(id);
     }
 
     @PATCH
     @Path("/{shortUrl}/extend")
-    public UrlDto extendExpirationByOnMonth(@PathParam String shortUrl) {
+    public UrlDto extendExpirationByOnMonth(@PathParam(PATH_PARAM_SHORT_URL) String shortUrl) {
         return urlService.extendExpiration(shortUrl, 30);
     }
 
