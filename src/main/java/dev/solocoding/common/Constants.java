@@ -7,5 +7,6 @@ import lombok.NoArgsConstructor;
 public class Constants {
     public static final String REDIRECT_COUNTER = "redirectCounter";
     public static final String FORWARDED_HEADER = "x-forwarded-for";
+    public static final String PATH_PARAM_SHORT_URL = "shortUrl";
     
 }
