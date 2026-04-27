@@ -2,8 +2,8 @@ package dev.usercoding.controller;
 
 import static io.restassured.RestAssured.given;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.Response.Status;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
@@ -25,7 +25,7 @@ import io.restassured.config.RestAssuredConfig;
 @QuarkusTestResource(MongoDbContainer.class)
 class RedirectControllerIntegrationTest {
     
-    private final static String SHORT_URL = "6GGfP2";
+    private static final String SHORT_URL = "6GGfP2";
 
     @Inject
     UrlRepository repo;

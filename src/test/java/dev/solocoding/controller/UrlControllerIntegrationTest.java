@@ -11,9 +11,9 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
@@ -41,8 +41,8 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(MongoDbContainer.class)
 class UrlControllerIntegrationTest {
     
-    private final static String SHORT_URL = "6GGfP2";
-    private final static String SHORT_URL_EXPIRED = "EXPIRED";
+    private static final String SHORT_URL = "6GGfP2";
+    private static final String SHORT_URL_EXPIRED = "EXPIRED";
 
     @Inject
     UrlRepository repo;

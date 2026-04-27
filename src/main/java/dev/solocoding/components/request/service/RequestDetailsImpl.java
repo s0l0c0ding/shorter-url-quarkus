@@ -1,6 +1,6 @@
 package dev.usercoding.components.request.service;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import io.vertx.core.http.HttpServerRequest;
 

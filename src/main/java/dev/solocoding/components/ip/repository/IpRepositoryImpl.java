@@ -2,7 +2,7 @@ package dev.usercoding.components.ip.repository;
 
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import dev.usercoding.components.ip.entity.Ip;
 

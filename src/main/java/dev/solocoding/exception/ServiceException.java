@@ -1,6 +1,6 @@
 package dev.usercoding.exception;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import dev.usercoding.exception.error.ApiError;
 import dev.usercoding.exception.error.ApiErrorContract;

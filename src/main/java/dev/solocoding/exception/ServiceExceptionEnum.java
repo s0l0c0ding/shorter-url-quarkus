@@ -1,6 +1,6 @@
 package dev.usercoding.exception;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
