@@ -1,4 +1,4 @@
-package dev.usercoding.conftest;
+package dev.solocoding.conftest;
 
 import org.testcontainers.containers.GenericContainer;
 

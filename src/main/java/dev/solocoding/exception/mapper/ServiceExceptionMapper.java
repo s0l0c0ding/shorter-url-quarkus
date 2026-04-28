@@ -1,4 +1,4 @@
-package dev.usercoding.exception.mapper;
+package dev.solocoding.exception.mapper;
 
 import jakarta.ws.rs.core.Response;
 
@@ -6,7 +6,7 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 
 import jakarta.ws.rs.ext.Provider;
 
-import dev.usercoding.exception.ServiceException;
+import dev.solocoding.exception.ServiceException;
 
 @Provider
 public class ServiceExceptionMapper implements ExceptionMapper<ServiceException> {

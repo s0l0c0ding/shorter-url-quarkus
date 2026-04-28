@@ -1,9 +1,9 @@
-package dev.usercoding.exception;
+package dev.solocoding.exception;
 
 import jakarta.ws.rs.core.Response;
 
-import dev.usercoding.exception.error.ApiError;
-import dev.usercoding.exception.error.ApiErrorContract;
+import dev.solocoding.exception.error.ApiError;
+import dev.solocoding.exception.error.ApiErrorContract;
 
 
 public class ServiceException extends RuntimeException implements ApiErrorContract {

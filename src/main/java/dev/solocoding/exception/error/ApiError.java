@@ -1,4 +1,4 @@
-package dev.usercoding.exception.error;
+package dev.solocoding.exception.error;
 
 
 import java.io.Serializable;

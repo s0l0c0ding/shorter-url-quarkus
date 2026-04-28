@@ -1,4 +1,4 @@
-package dev.usercoding.config;
+package dev.solocoding.config;
 
 import java.io.IOException;
 import java.util.function.UnaryOperator;
@@ -9,8 +9,8 @@ import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.ext.Provider;
 
-import dev.usercoding.common.Constants;
-import dev.usercoding.components.request.service.RequestDetails;
+import dev.solocoding.common.Constants;
+import dev.solocoding.components.request.service.RequestDetails;
 import io.vertx.core.http.HttpServerRequest;
 import lombok.extern.slf4j.Slf4j;
 

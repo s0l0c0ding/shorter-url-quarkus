@@ -1,4 +1,4 @@
-package dev.usercoding.components.request.service;
+package dev.solocoding.components.request.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 

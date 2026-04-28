@@ -1,4 +1,4 @@
-package dev.usercoding.components.url.service;
+package dev.solocoding.components.url.service;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,16 +22,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import dev.usercoding.common.CountryCount;
-import dev.usercoding.components.ip.dto.IpDto;
-import dev.usercoding.components.ip.service.IpServiceImpl;
-import dev.usercoding.components.request.service.RequestDetails;
-import dev.usercoding.components.request.service.RequestDetailsImpl;
-import dev.usercoding.components.url.dto.UrlDto;
-import dev.usercoding.components.url.entity.Url;
-import dev.usercoding.components.url.repository.UrlRepository;
-import dev.usercoding.components.url.service.impl.UrlServiceImpl;
-import dev.usercoding.exception.ServiceException;
+import dev.solocoding.common.CountryCount;
+import dev.solocoding.components.ip.dto.IpDto;
+import dev.solocoding.components.ip.service.IpServiceImpl;
+import dev.solocoding.components.request.service.RequestDetails;
+import dev.solocoding.components.request.service.RequestDetailsImpl;
+import dev.solocoding.components.url.dto.UrlDto;
+import dev.solocoding.components.url.entity.Url;
+import dev.solocoding.components.url.repository.UrlRepository;
+import dev.solocoding.components.url.service.impl.UrlServiceImpl;
+import dev.solocoding.exception.ServiceException;
 import io.vertx.mutiny.core.eventbus.EventBus;
 
 class UrlServiceImplTest {

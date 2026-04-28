@@ -1,4 +1,4 @@
-package dev.usercoding.controller;
+package dev.solocoding.controller;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -19,13 +19,13 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import dev.usercoding.common.CountryCount;
-import dev.usercoding.components.url.dto.UrlDto;
-import dev.usercoding.components.url.entity.Url;
-import dev.usercoding.components.url.repository.UrlRepository;
-import dev.usercoding.conftest.MongoDbContainer;
-import dev.usercoding.exception.ServiceExceptionEnum;
-import dev.usercoding.exception.error.ApiError;
+import dev.solocoding.common.CountryCount;
+import dev.solocoding.components.url.dto.UrlDto;
+import dev.solocoding.components.url.entity.Url;
+import dev.solocoding.components.url.repository.UrlRepository;
+import dev.solocoding.conftest.MongoDbContainer;
+import dev.solocoding.exception.ServiceExceptionEnum;
+import dev.solocoding.exception.error.ApiError;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;

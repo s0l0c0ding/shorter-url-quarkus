@@ -1,4 +1,4 @@
-package dev.usercoding.exception;
+package dev.solocoding.exception;
 
 import jakarta.ws.rs.core.Response.Status;
 

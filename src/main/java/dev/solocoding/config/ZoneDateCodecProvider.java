@@ -1,4 +1,4 @@
-package dev.usercoding.config;
+package dev.solocoding.config;
 
 import java.time.ZonedDateTime;
 

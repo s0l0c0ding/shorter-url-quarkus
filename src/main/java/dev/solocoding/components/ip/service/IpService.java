@@ -1,6 +1,6 @@
-package dev.usercoding.components.ip.service;
+package dev.solocoding.components.ip.service;
 
-import dev.usercoding.components.ip.dto.IpDto;
+import dev.solocoding.components.ip.dto.IpDto;
 
 public interface IpService {
     

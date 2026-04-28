@@ -1,6 +1,6 @@
-package dev.usercoding.components.url.service.impl;
+package dev.solocoding.components.url.service.impl;
 
-import static dev.usercoding.common.Constants.REDIRECT_COUNTER;
+import static dev.solocoding.common.Constants.REDIRECT_COUNTER;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -15,17 +15,17 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import org.bson.types.ObjectId;
 
-import dev.usercoding.common.CountryCount;
-import dev.usercoding.components.ip.dto.IpDto;
-import dev.usercoding.components.ip.service.IpService;
-import dev.usercoding.components.request.service.RequestDetails;
-import dev.usercoding.components.url.dto.UrlDto;
-import dev.usercoding.components.url.entity.Url;
-import dev.usercoding.components.url.repository.UrlRepository;
-import dev.usercoding.components.url.service.UrlService;
-import dev.usercoding.components.url.service.UrlValidation;
-import dev.usercoding.exception.ServiceException;
-import dev.usercoding.exception.ServiceExceptionEnum;
+import dev.solocoding.common.CountryCount;
+import dev.solocoding.components.ip.dto.IpDto;
+import dev.solocoding.components.ip.service.IpService;
+import dev.solocoding.components.request.service.RequestDetails;
+import dev.solocoding.components.url.dto.UrlDto;
+import dev.solocoding.components.url.entity.Url;
+import dev.solocoding.components.url.repository.UrlRepository;
+import dev.solocoding.components.url.service.UrlService;
+import dev.solocoding.components.url.service.UrlValidation;
+import dev.solocoding.exception.ServiceException;
+import dev.solocoding.exception.ServiceExceptionEnum;
 import io.quarkus.panache.common.Page;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.mutiny.core.eventbus.EventBus;

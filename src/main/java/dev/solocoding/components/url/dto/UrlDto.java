@@ -1,10 +1,10 @@
-package dev.usercoding.components.url.dto;
+package dev.solocoding.components.url.dto;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import dev.usercoding.common.CountryCount;
-import dev.usercoding.components.url.entity.Url;
+import dev.solocoding.common.CountryCount;
+import dev.solocoding.components.url.entity.Url;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

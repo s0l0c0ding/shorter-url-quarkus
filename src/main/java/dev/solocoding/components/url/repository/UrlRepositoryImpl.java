@@ -1,10 +1,10 @@
-package dev.usercoding.components.url.repository;
+package dev.solocoding.components.url.repository;
 
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
-import dev.usercoding.components.url.entity.Url;
+import dev.solocoding.components.url.entity.Url;
 
 @ApplicationScoped
 public class UrlRepositoryImpl implements UrlRepository {

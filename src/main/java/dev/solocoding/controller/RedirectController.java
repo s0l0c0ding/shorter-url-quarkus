@@ -1,6 +1,6 @@
-package dev.usercoding.controller;
+package dev.solocoding.controller;
 
-import static dev.usercoding.common.Constants.PATH_PARAM_SHORT_URL;
+import static dev.solocoding.common.Constants.PATH_PARAM_SHORT_URL;
 
 import java.net.URI;
 
@@ -19,7 +19,7 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
-import dev.usercoding.components.url.service.UrlService;
+import dev.solocoding.components.url.service.UrlService;
 
 @Path("/")
 @Produces(MediaType.TEXT_HTML)

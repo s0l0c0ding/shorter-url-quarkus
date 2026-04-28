@@ -24,7 +24,7 @@ docker run --name mongodb -d mongo:4.2-bionic
 
 - **Stack**: Quarkus 3.34.1, MongoDB (Panache), RESTEasy JSON-B
 - **Java**: 21
-- **Package**: `dev.usercoding`
+- **Package**: `dev.solocoding`
 - **Security**: Elytron embedded properties (`src/main/resources/application.properties`)
   - User `user` / `fake1234` has roles `admin,user`
   - User `user1` / `fake1234` has role `user`

@@ -1,4 +1,4 @@
-package dev.usercoding.components.ip.service;
+package dev.solocoding.components.ip.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -10,9 +10,9 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dev.usercoding.components.ip.entity.Ip;
-import dev.usercoding.components.ip.repository.IpRepository;
-import dev.usercoding.components.ip.repository.IpRepositoryImpl;
+import dev.solocoding.components.ip.entity.Ip;
+import dev.solocoding.components.ip.repository.IpRepository;
+import dev.solocoding.components.ip.repository.IpRepositoryImpl;
 
 class IpServiceImplTest {
     

@@ -1,4 +1,4 @@
-package dev.usercoding.common;
+package dev.solocoding.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

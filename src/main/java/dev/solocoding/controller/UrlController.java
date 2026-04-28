@@ -1,6 +1,6 @@
-package dev.usercoding.controller;
+package dev.solocoding.controller;
 
-import static dev.usercoding.common.Constants.PATH_PARAM_SHORT_URL;
+import static dev.solocoding.common.Constants.PATH_PARAM_SHORT_URL;
 
 import java.util.List;
 
@@ -31,8 +31,8 @@ import jakarta.ws.rs.core.Response.Status;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
-import dev.usercoding.components.url.dto.UrlDto;
-import dev.usercoding.components.url.service.UrlService;
+import dev.solocoding.components.url.dto.UrlDto;
+import dev.solocoding.components.url.service.UrlService;
 import lombok.RequiredArgsConstructor;
 
 @Path("/url")

@@ -1,12 +1,12 @@
-package dev.usercoding.exception.mapper;
+package dev.solocoding.exception.mapper;
 import jakarta.ws.rs.core.Response;
 
 import jakarta.ws.rs.ext.ExceptionMapper;
 
 import jakarta.ws.rs.ext.Provider;
 
-import dev.usercoding.exception.ServiceExceptionEnum;
-import dev.usercoding.exception.error.ApiError;
+import dev.solocoding.exception.ServiceExceptionEnum;
+import dev.solocoding.exception.error.ApiError;
 import lombok.extern.slf4j.Slf4j;
 
 @Provider
