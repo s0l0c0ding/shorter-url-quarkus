@@ -39,17 +39,17 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
           ${{ runner.os }}-build-
           ${{ runner.os }}-
-    - name: Login to GCR
-      uses: docker/login-action@v3
+    - name: Login to GAR
+      uses: docker/login-action@v4
       with:
-          registry: gcr.io
+          registry: europe-west1-docker.pkg.dev
           username: _json_key
-          password: ${{ secrets.GCR_JSON_KEY }}
+          password: ${{ secrets.GAR_JSON_KEY }}
     - name: build
       run: |
         mvn package -Pnative -DskipTests
-        docker build -f src/main/docker/Dockerfile.native -t gcr.io/"$PROG_ID"/shorter-url:"$RELEASE_VERSION" .
+        docker build -f src/main/docker/Dockerfile.native -t europe-west1-docker.pkg.dev/"$PROG_ID"/shorter-url:"$RELEASE_VERSION" .
     - name: push
       run: |
-        docker push gcr.io/"$PROG_ID"/shorter-url:"$RELEASE_VERSION"
+        docker push europe-west1-docker.pkg.dev/"$PROG_ID"/shorter-url:"$RELEASE_VERSION"
 
