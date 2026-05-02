@@ -48,8 +48,8 @@ jobs:
     - name: build
       run: |
         mvn package -Pnative -DskipTests
-        docker build -f src/main/docker/Dockerfile.native -t europe-west1-docker.pkg.dev/"$PROG_ID"/shorter-url:"$RELEASE_VERSION" .
+        docker build -f src/main/docker/Dockerfile.native -t europe-west1-docker.pkg.dev/"$PROG_ID"/shorter-url/shorter-url:"$RELEASE_VERSION" .
     - name: push
       run: |
-        docker push europe-west1-docker.pkg.dev/"$PROG_ID"/shorter-url:"$RELEASE_VERSION"
+        docker push europe-west1-docker.pkg.dev/"$PROG_ID"/shorter-url/shorter-url:"$RELEASE_VERSION"
 
