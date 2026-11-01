@@ -4,7 +4,9 @@
 
 ```bash
 # Dev mode (requires MongoDB container first)
-docker run --name mongodb -d mongo:4.2-bionic
+# Always use fully qualified image names: Podman has no unqualified-search
+# registries configured by default and rejects short names like "mongo".
+docker run --name mongodb -d docker.io/library/mongo:4.2-bionic
 ./mvnw quarkus:dev
 
 # Unit tests only (no container needed)
@@ -35,6 +37,12 @@ docker run --name mongodb -d mongo:4.2-bionic
 - Integration tests: Use Testcontainers (MongoDbContainer in `conftest`)
 - Testcontainers starts a real MongoDB automatically via `QuarkusTestResourceLifecycleManager`
 - No manual Docker setup needed for tests
+- Podman: Testcontainers talks to the rootless Podman socket. Configure `~/.testcontainers.properties`:
+  ```properties
+  docker.host=unix:///run/user/1000/podman/podman.sock
+  ryuk.disabled=true
+  ```
+  and keep container images fully qualified (e.g. `docker.io/library/mongo:latest`).
 
 ## IP Geolocation Data
 

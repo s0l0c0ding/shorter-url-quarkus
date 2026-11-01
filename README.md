@@ -11,10 +11,13 @@ This project uses Quarkus and MongoDb
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
-- first, launch a MongoDb container using docker:
+- first, launch a MongoDb container using docker (or podman):
  ```
- docker run --name mongodb -d mongo:4.2-bionic 
+ docker run --name mongodb -d mongo 
  ```
+ > Use the fully qualified image name (`docker.io/library/mongo:latest`). Short names such as
+ > `mongo` fail on Podman unless `unqualified-search-registries` is configured in
+ > `/etc/containers/registries.conf`.
 - second, launch the following mvn comand:
 ```
 ./mvnw quarkus:dev
