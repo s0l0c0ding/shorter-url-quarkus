@@ -1,0 +1,517 @@
+---
+openapi: 3.1.0
+components:
+  schemas:
+    ApiError:
+      description: Service error details
+      type: object
+      required:
+      - code
+      - name
+      - description
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: Service error code
+          examples:
+          - 1
+        name:
+          type: string
+          description: Service error name
+          examples:
+          - NOT_VALID_URL
+        description:
+          type: string
+          description: Human-readable error description
+          examples:
+          - Url is not valid
+    CountryCount:
+      description: Redirect count for one country
+      type: object
+      properties:
+        country:
+          type: string
+          description: Country code
+          examples:
+          - DE
+        count:
+          type: integer
+          format: int32
+          description: Number of redirects from the country
+          examples:
+          - 1
+    UrlDto:
+      description: Shortened URL details
+      type: object
+      properties:
+        id:
+          type: string
+          description: Database id of the URL
+          examples:
+          - 672b1f8c9a1b2c3d4e5f6a7b
+        fullUrl:
+          type: string
+          description: Original URL
+          examples:
+          - https://solocoding.dev/
+        shortUrl:
+          type: string
+          description: Short URL key
+          examples:
+          - abc123
+        countryCountList:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountryCount"
+          description: Per-country redirect counts
+        count:
+          type: integer
+          format: int64
+          description: Total redirect count
+        expireTime:
+          description: Expiration time
+          type: string
+          $ref: "#/components/schemas/ZonedDateTime"
+    ZonedDateTime:
+      type: string
+      format: date-time
+      examples:
+      - 2022-03-10T12:15:50-04:00
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: basic
+      description: Authentication
+tags:
+- name: Redirect Controller
+  description: Public redirects
+- name: Url Controller
+  description: "Create, read, update, and delete shortened URLs"
+paths:
+  /:
+    get:
+      summary: Redirect to home
+      description: Redirect the end user to the configured home page
+      tags:
+      - Redirect Controller
+      responses:
+        "307":
+          description: Temporary Redirect
+          headers:
+            Location:
+              description: Target URL
+              schema:
+                format: uri
+                type: string
+  /redirect/{shortUrl}:
+    get:
+      summary: Redirect
+      description: Redirect the end user to the full URL
+      tags:
+      - Redirect Controller
+      parameters:
+      - description: Short URL key
+        in: path
+        name: shortUrl
+        required: true
+        schema:
+          type: string
+      responses:
+        "307":
+          description: Temporary Redirect
+          headers:
+            Location:
+              description: Target URL
+              schema:
+                format: uri
+                type: string
+        "400":
+          description: Expired URL
+          content:
+            application/json:
+              examples:
+                EXPIRED_URL:
+                  value:
+                    code: 2
+                    name: EXPIRED_URL
+                    description: Url is expired
+                EXPIRED_DELETED:
+                  value:
+                    code: 3
+                    name: EXPIRED_DELETED
+                    description: Url is expired from 60 days and has been deleted
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: URL not found
+          content:
+            application/json:
+              examples:
+                URL_NOT_FOUND:
+                  value:
+                    code: 4
+                    name: URL_NOT_FOUND
+                    description: No such url is present
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    code: 5
+                    name: INTERNAL_ERROR
+                    description: Something bad happend
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /url:
+    post:
+      summary: Save URL
+      description: Make a new short URL by providing the full URL in the payload
+      tags:
+      - Url Controller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UrlDto"
+        required: true
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UrlDto"
+        "400":
+          description: Invalid URL
+          content:
+            application/json:
+              examples:
+                NOT_VALID_URL:
+                  value:
+                    code: 1
+                    name: NOT_VALID_URL
+                    description: Url is not valid
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    code: 5
+                    name: INTERNAL_ERROR
+                    description: Something bad happend
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - SecurityScheme:
+        - user
+    get:
+      summary: List URLs
+      description: Return a page of shortened URLs
+      tags:
+      - Url Controller
+      parameters:
+      - description: 0-based page number
+        in: query
+        name: index
+        schema:
+          format: int32
+          type: integer
+      - description: Page size
+        in: query
+        name: size
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UrlDto"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    code: 5
+                    name: INTERNAL_ERROR
+                    description: Something bad happend
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - SecurityScheme:
+        - admin
+  /url/{id}:
+    delete:
+      summary: Delete URL
+      description: Delete the URL with the given id
+      tags:
+      - Url Controller
+      parameters:
+      - description: URL id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "404":
+          description: URL not found
+          content:
+            application/json:
+              examples:
+                URL_NOT_FOUND:
+                  value:
+                    code: 4
+                    name: URL_NOT_FOUND
+                    description: No such url is present
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    code: 5
+                    name: INTERNAL_ERROR
+                    description: Something bad happend
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - SecurityScheme:
+        - admin
+  /url/{shortUrl}:
+    put:
+      summary: Update URL
+      description: Update the full URL for a given short URL
+      tags:
+      - Url Controller
+      parameters:
+      - description: Short URL key
+        in: path
+        name: shortUrl
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UrlDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UrlDto"
+        "400":
+          description: Invalid or expired URL
+          content:
+            application/json:
+              examples:
+                NOT_VALID_URL:
+                  value:
+                    code: 1
+                    name: NOT_VALID_URL
+                    description: Url is not valid
+                EXPIRED_URL:
+                  value:
+                    code: 2
+                    name: EXPIRED_URL
+                    description: Url is expired
+                EXPIRED_DELETED:
+                  value:
+                    code: 3
+                    name: EXPIRED_DELETED
+                    description: Url is expired from 60 days and has been deleted
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "404":
+          description: URL not found
+          content:
+            application/json:
+              examples:
+                URL_NOT_FOUND:
+                  value:
+                    code: 4
+                    name: URL_NOT_FOUND
+                    description: No such url is present
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    code: 5
+                    name: INTERNAL_ERROR
+                    description: Something bad happend
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - SecurityScheme:
+        - user
+    get:
+      summary: Get URL details by short URL
+      description: Return the URL identified by the short URL key
+      tags:
+      - Url Controller
+      parameters:
+      - description: Short URL key
+        in: path
+        name: shortUrl
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UrlDto"
+        "400":
+          description: Expired URL
+          content:
+            application/json:
+              examples:
+                EXPIRED_URL:
+                  value:
+                    code: 2
+                    name: EXPIRED_URL
+                    description: Url is expired
+                EXPIRED_DELETED:
+                  value:
+                    code: 3
+                    name: EXPIRED_DELETED
+                    description: Url is expired from 60 days and has been deleted
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "404":
+          description: URL not found
+          content:
+            application/json:
+              examples:
+                URL_NOT_FOUND:
+                  value:
+                    code: 4
+                    name: URL_NOT_FOUND
+                    description: No such url is present
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    code: 5
+                    name: INTERNAL_ERROR
+                    description: Something bad happend
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - SecurityScheme:
+        - user
+  /url/{shortUrl}/extend:
+    patch:
+      summary: Extend expiration
+      description: Extend the expiration of a short URL by 30 days
+      tags:
+      - Url Controller
+      parameters:
+      - description: Short URL key
+        in: path
+        name: shortUrl
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UrlDto"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "404":
+          description: URL not found
+          content:
+            application/json:
+              examples:
+                URL_NOT_FOUND:
+                  value:
+                    code: 4
+                    name: URL_NOT_FOUND
+                    description: No such url is present
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    code: 5
+                    name: INTERNAL_ERROR
+                    description: Something bad happend
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - SecurityScheme:
+        - user
+info:
+  title: Shorten URL API
+  version: "0.72"
+servers:
+- url: http://localhost:8080
+  description: Auto generated value
+- url: http://0.0.0.0:8080
+  description: Auto generated value

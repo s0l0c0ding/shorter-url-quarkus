@@ -6,3 +6,4 @@ target/
 .classpath
 .env
 .env_sec
+docs/openapi.json

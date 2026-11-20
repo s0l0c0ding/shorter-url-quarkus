@@ -7,20 +7,34 @@
 # Always use fully qualified image names: Podman has no unqualified-search
 # registries configured by default and rejects short names like "mongo".
 docker run --name mongodb -d docker.io/library/mongo:4.2-bionic
-./mvnw quarkus:dev
+mvn quarkus:dev
 
-# Unit tests only (no container needed)
-./mvnw test
+# Unit tests only (no container needed; does not regenerate the OpenAPI contract)
+mvn test
 
 # All tests (integration tests use Testcontainers automatically)
-./mvnw verify
+mvn verify -DskipITs=false
 
-# Package JVM
-./mvnw package
+# Package JVM (regenerates the OpenAPI contract)
+mvn package
 
 # Native build (requires GraalVM or container support)
-./mvnw package -Pnative -Dquarkus.native.containerBuild=true
+mvn package -Pnative -Dquarkus.native.containerBuild=true
 ```
+
+Use the system `mvn`. This repo has no Maven wrapper; do not add one.
+
+## OpenAPI contract
+
+`docs/openapi.yaml` is generated from annotations. It is a committed artifact.
+
+- `mvn package` regenerates `docs/openapi.yaml`.
+- `mvn verify -DskipITs=false` regenerates `docs/openapi.yaml`.
+- `mvn test` does not regenerate it; test output goes under `target/`.
+- Commit the regenerated `docs/openapi.yaml` with any source change that affects it.
+- Never edit `docs/openapi.yaml` by hand. Change annotations and rebuild.
+
+`docs/openapi.json` is generated alongside it and is ignored by Git.
 
 ## Architecture
 
