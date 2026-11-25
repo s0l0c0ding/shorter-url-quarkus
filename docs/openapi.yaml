@@ -149,7 +149,8 @@ paths:
                   value:
                     code: 3
                     name: EXPIRED_DELETED
-                    description: Url is expired from 60 days and has been deleted
+                    description: Url is expired for more than 30 days and has been
+                      deleted
               schema:
                 $ref: "#/components/schemas/ApiError"
         "404":
@@ -370,7 +371,8 @@ paths:
                   value:
                     code: 3
                     name: EXPIRED_DELETED
-                    description: Url is expired from 60 days and has been deleted
+                    description: Url is expired for more than 30 days and has been
+                      deleted
               schema:
                 $ref: "#/components/schemas/ApiError"
         "401":
@@ -437,7 +439,8 @@ paths:
                   value:
                     code: 3
                     name: EXPIRED_DELETED
-                    description: Url is expired from 60 days and has been deleted
+                    description: Url is expired for more than 30 days and has been
+                      deleted
               schema:
                 $ref: "#/components/schemas/ApiError"
         "401":

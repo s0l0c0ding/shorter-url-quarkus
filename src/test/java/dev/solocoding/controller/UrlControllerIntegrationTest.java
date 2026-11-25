@@ -15,6 +15,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,13 +61,17 @@ class UrlControllerIntegrationTest {
     }
 
     private Url getExpiredShortUrl() {
+        return getExpiredShortUrl(SHORT_URL_EXPIRED, ZonedDateTime.now(ZoneOffset.UTC).minusDays(65));
+    }
+
+    private Url getExpiredShortUrl(String shortUrl, ZonedDateTime expireTime) {
         Url url = new Url();
         url.setId(new ObjectId());
         url.setFullUrl("https://www.expired.dev");
-        url.setShortUrl(SHORT_URL_EXPIRED);
+        url.setShortUrl(shortUrl);
         url.setCountryCountList(List.of(new CountryCount("US",1)));
         url.setCount(0);
-        url.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(65));
+        url.setExpireTime(expireTime);
         url.setVersion(0L);
         return url;
     }
@@ -106,6 +111,54 @@ class UrlControllerIntegrationTest {
         assertEquals(1, repo.count());
         assertEquals(ServiceExceptionEnum.EXPIRED_DELETED.getCode(), actual.getCode());
         assertEquals(ServiceExceptionEnum.EXPIRED_DELETED.getDescription(), actual.getDescription());
+    }
+
+    @Test
+    // AC-3.14
+    void getUrlByShortUrlShouldFailWith400WhenUrlExpiredWithinRetention() {
+        String shortUrl = "EXPIRED10";
+        repo.persist(getExpiredShortUrl(shortUrl, ZonedDateTime.now(ZoneOffset.UTC).minusDays(10)));
+
+        var actual = with()
+            .get("/{shortUrl}", shortUrl)
+            .then()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON).extract().as(ApiError.class);
+
+        assertEquals(ServiceExceptionEnum.EXPIRED_URL.getCode(), actual.getCode());
+        assertEquals(1, repo.count("shortUrl", shortUrl));
+    }
+
+    @Test
+    // AC-3.15
+    void getUrlByShortUrlShouldDeleteWhenUrlExpiredPastRetention() {
+        String shortUrl = "EXPIRED31";
+        repo.persist(getExpiredShortUrl(shortUrl, ZonedDateTime.now(ZoneOffset.UTC).minusDays(31)));
+
+        var actual = with()
+            .get("/{shortUrl}", shortUrl)
+            .then()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON).extract().as(ApiError.class);
+
+        assertEquals(ServiceExceptionEnum.EXPIRED_DELETED.getCode(), actual.getCode());
+        assertEquals(0, repo.count("shortUrl", shortUrl));
+    }
+
+    @Test
+    // AC-3.13
+    void shouldCreateUrlExpirationTtlIndexAtStartup() {
+        Document ttlIndex = null;
+        for (Document index : repo.mongoCollection().listIndexes()) {
+            if ("expireTime_ttl".equals(index.getString("name"))) {
+                ttlIndex = index;
+                break;
+            }
+        }
+
+        assertNotNull(ttlIndex);
+        assertEquals(1, ttlIndex.get("key", Document.class).get("expireTime"));
+        assertEquals(2592000L, ((Number) ttlIndex.get("expireAfterSeconds")).longValue());
     }
 
     @Test

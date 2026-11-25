@@ -8,5 +8,6 @@ public class Constants {
     public static final String REDIRECT_COUNTER = "redirectCounter";
     public static final String FORWARDED_HEADER = "x-forwarded-for";
     public static final String PATH_PARAM_SHORT_URL = "shortUrl";
+    public static final long EXPIRE_RETENTION_DAYS = 30L;
     
 }

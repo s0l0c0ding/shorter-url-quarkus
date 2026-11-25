@@ -56,7 +56,7 @@ public class UrlController {
 
     private static final String ERROR_1 = "{\"code\":1,\"name\":\"NOT_VALID_URL\",\"description\":\"Url is not valid\"}";
     private static final String ERROR_2 = "{\"code\":2,\"name\":\"EXPIRED_URL\",\"description\":\"Url is expired\"}";
-    private static final String ERROR_3 = "{\"code\":3,\"name\":\"EXPIRED_DELETED\",\"description\":\"Url is expired from 60 days and has been deleted\"}";
+    private static final String ERROR_3 = "{\"code\":3,\"name\":\"EXPIRED_DELETED\",\"description\":\"Url is expired for more than 30 days and has been deleted\"}";
     private static final String ERROR_4 = "{\"code\":4,\"name\":\"URL_NOT_FOUND\",\"description\":\"No such url is present\"}";
     private static final String ERROR_5 = "{\"code\":5,\"name\":\"INTERNAL_ERROR\",\"description\":\"Something bad happend\"}";
     private static final String ERROR_6 = "{\"code\":6,\"name\":\"NOT_VALID_EXPIRATION\",\"description\":\"Expiration time must be between 1 and 365 days from now\"}";

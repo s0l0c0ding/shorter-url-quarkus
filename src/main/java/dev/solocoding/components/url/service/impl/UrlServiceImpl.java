@@ -1,5 +1,6 @@
 package dev.solocoding.components.url.service.impl;
 
+import static dev.solocoding.common.Constants.EXPIRE_RETENTION_DAYS;
 import static dev.solocoding.common.Constants.REDIRECT_COUNTER;
 
 import java.time.ZoneOffset;
@@ -43,7 +44,7 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
     @Override
     public UrlDto getUrlByShortUrl(String shortUrl) {
         Url url = checkExistence(shortUrl);
-        checkExpireDateAndDeleteIfOneMonth(url);
+        checkExpiry(url);
         return new UrlDto(url);
     }
 
@@ -76,7 +77,7 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
     @Override
     public UrlDto getAndRedirect(String shortUrl) {
         Url url = checkExistence(shortUrl);
-        checkExpireDateAndDeleteIfOneMonth(url);
+        checkExpiry(url);
         bus.publish(REDIRECT_COUNTER, url);
         return new UrlDto(url);
     }
@@ -94,7 +95,7 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
     public UrlDto updateUrlByShortId(String shortUrl, UrlDto dto) {
         isValidUrl(dto);
         var entity = checkExistence(shortUrl);
-        checkExpireDateAndDeleteIfOneMonth(entity);
+        checkExpiry(entity);
         entity.setFullUrl(dto.getFullUrl());
         repo.update(entity);
         return new UrlDto(entity);
@@ -131,12 +132,14 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
         return outList;
     }
 
-    private void checkExpireDateAndDeleteIfOneMonth(Url url) {
-        if(isEXpireTimeAfterDays(url.getExpireTime(), 60l)) {
+    private void checkExpiry(Url url) {
+        if (isExpiredForDays(url.getExpireTime(), EXPIRE_RETENTION_DAYS)) {
             repo.delete(url);
             throw new ServiceException(ServiceExceptionEnum.EXPIRED_DELETED);
         }
-        if(isEXpireTimeAfterDays(url.getExpireTime(), 1l)) throw new ServiceException(ServiceExceptionEnum.EXPIRED_URL, url.getExpireTime().toString());
+        if (isExpired(url.getExpireTime())) {
+            throw new ServiceException(ServiceExceptionEnum.EXPIRED_URL, url.getExpireTime().toString());
+        }
     }
 
     @Override

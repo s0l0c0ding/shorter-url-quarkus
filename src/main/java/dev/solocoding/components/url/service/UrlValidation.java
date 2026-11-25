@@ -3,7 +3,6 @@ package dev.solocoding.components.url.service;
 import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -25,10 +24,15 @@ public interface UrlValidation {
                 throw new ServiceException(ServiceExceptionEnum.NOT_VALID_URL, "");
     }
 
-    default boolean isEXpireTimeAfterDays(ZonedDateTime dateTime, Long days) {
-        if(Objects.isNull(dateTime)) return false;
-        final var now = ZonedDateTime.now(ZoneOffset.UTC);
-        return dateTime.until(now.plusDays(1), ChronoUnit.DAYS) >= days ;
+    default boolean isExpired(ZonedDateTime expireTime) {
+        if (Objects.isNull(expireTime)) return false;
+        return expireTime.isBefore(ZonedDateTime.now(ZoneOffset.UTC));
+    }
+
+    default boolean isExpiredForDays(ZonedDateTime expireTime, long days) {
+        if (Objects.isNull(expireTime)) return false;
+        final var elapsed = Duration.between(expireTime, ZonedDateTime.now(ZoneOffset.UTC));
+        return elapsed.compareTo(Duration.ofDays(days)) > 0;
     }
 
     /**

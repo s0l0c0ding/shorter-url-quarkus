@@ -118,6 +118,47 @@ class UrlServiceImplTest {
     
             assertThrows(ServiceException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
         }
+
+        @Test
+        // AC-3.14
+        void shouldRejectUrlExpiredWithinRetentionWithoutDeleting() {
+            var stub = getShortUrlStub();
+            stub.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(29));
+
+            when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(stub));
+
+            var exception = assertThrows(ServiceException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
+
+            assertEquals(2, ((ApiError) exception.toResponseEntity().getEntity()).getCode());
+            verify(repo, never()).delete(any(Url.class));
+        }
+
+        @Test
+        // AC-3.15
+        void shouldDeleteUrlExpiredPastRetention() {
+            var stub = getShortUrlStub();
+            stub.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(31));
+
+            when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(stub));
+
+            var exception = assertThrows(ServiceException.class, () -> urlService.getUrlByShortUrl(SHORT_URL));
+
+            assertEquals(3, ((ApiError) exception.toResponseEntity().getEntity()).getCode());
+            verify(repo, times(1)).delete(stub);
+        }
+
+        @Test
+        // AC-3.11, AC-3.14
+        void shouldNotDeleteUnexpiredUrlWithLongExpiration() {
+            var stub = getShortUrlStub();
+            stub.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(365));
+
+            when(repo.findByShortUrl(SHORT_URL)).thenReturn(Optional.of(stub));
+
+            assertDoesNotThrow(() -> urlService.getUrlByShortUrl(SHORT_URL));
+
+            verify(repo, never()).delete(any(Url.class));
+        }
     }
 
     @Nested
