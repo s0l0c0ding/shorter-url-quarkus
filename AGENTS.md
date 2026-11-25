@@ -47,6 +47,10 @@ Use the system `mvn`. This repo has no Maven wrapper; do not add one.
 
 ## Testing
 
+- Test methods follow the existing project style: `should<Behavior>` or
+  `should<Behavior>When<Condition>`. A brief comment names the acceptance
+  criterion the test proves, e.g. `// AC-3.2`. Do not embed the AC id in the
+  method name.
 - Unit tests: Standard JUnit 5 + Mockito in `src/test/java`
 - Integration tests: Use Testcontainers (MongoDbContainer in `conftest`)
 - Testcontainers starts a real MongoDB automatically via `QuarkusTestResourceLifecycleManager`

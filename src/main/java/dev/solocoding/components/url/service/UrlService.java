@@ -1,5 +1,6 @@
 package dev.solocoding.components.url.service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import dev.solocoding.components.url.dto.UrlDto;
@@ -10,10 +11,13 @@ public interface UrlService {
 
     /**
      * @param dto
-     * Save a new Url into the database with the shot url equal to ObjectId.substring(18, 24)
+     * Save a new Url into the database with the shot url equal to ObjectId.substring(18, 24).
+     * When dto.expireTime is set it must be between 1 and 365 days from now, otherwise
+     * the expiration defaults to 30 days.
      * @return UrlDto
      */
     UrlDto saveUrl (UrlDto dto);
+
 
     void deleteUrlById (String id);
 

@@ -4,15 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +36,7 @@ import dev.solocoding.components.url.entity.Url;
 import dev.solocoding.components.url.repository.UrlRepository;
 import dev.solocoding.components.url.service.impl.UrlServiceImpl;
 import dev.solocoding.exception.ServiceException;
+import dev.solocoding.exception.error.ApiError;
 import io.vertx.mutiny.core.eventbus.EventBus;
 
 class UrlServiceImplTest {
@@ -154,6 +159,62 @@ class UrlServiceImplTest {
             var actual =  urlService.saveUrl(dto);
             assertEquals(getShortUrlStub().getFullUrl(), actual.getFullUrl());
             assertNotNull(actual.getExpireTime());
+        }
+
+        @Test
+        // AC-3.11
+        void shouldHonorRequestedExpirationBetweenOneAnd365Days() {
+            var requested = ZonedDateTime.now(ZoneOffset.UTC).plusDays(90);
+            var dto = new UrlDto();
+            dto.setFullUrl("https://www.usercoding.dev");
+            dto.setExpireTime(requested);
+
+            var actual = urlService.saveUrl(dto);
+
+            assertEquals(requested, actual.getExpireTime());
+            verify(repo, times(1)).persist(any(Url.class));
+        }
+
+        @Test
+        // AC-3.11
+        void shouldDefaultExpirationToThirtyDaysWhenAbsent() {
+            var dto = new UrlDto();
+            dto.setFullUrl("https://www.usercoding.dev");
+
+            var actual = urlService.saveUrl(dto);
+
+            assertNotNull(actual.getExpireTime());
+            var minutes = ChronoUnit.MINUTES.between(ZonedDateTime.now(ZoneOffset.UTC), actual.getExpireTime());
+            assertTrue(minutes >= Duration.ofDays(29).toMinutes() && minutes <= Duration.ofDays(31).toMinutes());
+        }
+
+        @Test
+        // AC-3.11
+        void shouldRejectExpirationInThePast() {
+            assertRejectsExpiration(ZonedDateTime.now(ZoneOffset.UTC).minusMinutes(1));
+        }
+
+        @Test
+        // AC-3.11
+        void shouldRejectExpirationUnderOneDay() {
+            assertRejectsExpiration(ZonedDateTime.now(ZoneOffset.UTC).plusHours(1));
+        }
+
+        @Test
+        // AC-3.11
+        void shouldRejectExpirationOver365Days() {
+            assertRejectsExpiration(ZonedDateTime.now(ZoneOffset.UTC).plusDays(366));
+        }
+
+        private void assertRejectsExpiration(ZonedDateTime expireTime) {
+            var dto = new UrlDto();
+            dto.setFullUrl("https://www.usercoding.dev");
+            dto.setExpireTime(expireTime);
+
+            var exception = assertThrows(ServiceException.class, () -> urlService.saveUrl(dto));
+
+            assertEquals(6, ((ApiError) exception.toResponseEntity().getEntity()).getCode());
+            verify(repo, never()).persist(any(Url.class));
         }
     }
     

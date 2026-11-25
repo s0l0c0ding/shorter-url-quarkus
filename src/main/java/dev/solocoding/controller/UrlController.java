@@ -59,6 +59,7 @@ public class UrlController {
     private static final String ERROR_3 = "{\"code\":3,\"name\":\"EXPIRED_DELETED\",\"description\":\"Url is expired from 60 days and has been deleted\"}";
     private static final String ERROR_4 = "{\"code\":4,\"name\":\"URL_NOT_FOUND\",\"description\":\"No such url is present\"}";
     private static final String ERROR_5 = "{\"code\":5,\"name\":\"INTERNAL_ERROR\",\"description\":\"Something bad happend\"}";
+    private static final String ERROR_6 = "{\"code\":6,\"name\":\"NOT_VALID_EXPIRATION\",\"description\":\"Expiration time must be between 1 and 365 days from now\"}";
 
     private final UrlService urlService;
 
@@ -98,7 +99,9 @@ public class UrlController {
     @Operation(summary = "Save URL", description = "Make a new short URL by providing the full URL in the payload")
     @APIResponses({
             @APIResponse(responseCode = "201", description = "CREATED", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UrlDto.class))),
-            @APIResponse(responseCode = "400", description = "Invalid URL", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiError.class), examples = @ExampleObject(name = "NOT_VALID_URL", value = ERROR_1))),
+            @APIResponse(responseCode = "400", description = "Invalid URL or expiration", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiError.class), examples = {
+                    @ExampleObject(name = "NOT_VALID_URL", value = ERROR_1),
+                    @ExampleObject(name = "NOT_VALID_EXPIRATION", value = ERROR_6) })),
             @APIResponse(responseCode = "401", description = "Not Authorized"),
             @APIResponse(responseCode = "403", description = "Not Allowed"),
             @APIResponse(responseCode = "500", description = "Internal error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiError.class), examples = @ExampleObject(name = "INTERNAL_ERROR", value = ERROR_5)))

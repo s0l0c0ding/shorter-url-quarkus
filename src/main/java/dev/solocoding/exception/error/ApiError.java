@@ -15,7 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(name = "ApiError", description = "Service error details")
 public class ApiError implements Serializable {
-    @Schema(description = "Service error code", type = SchemaType.INTEGER, format = "int32", required = true, example = "1")
+    @Schema(description = "Service error code", type = SchemaType.INTEGER, format = "int32", required = true, example = "1", enumeration = {
+            "1", "2", "3", "4", "5", "6", "7", "8" })
     private int code;
     @Schema(description = "Service error name", type = SchemaType.STRING, required = true, example = "NOT_VALID_URL")
     private String name;

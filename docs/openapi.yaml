@@ -16,6 +16,15 @@ components:
           description: Service error code
           examples:
           - 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
         name:
           type: string
           description: Service error name
@@ -47,7 +56,7 @@ components:
       properties:
         id:
           type: string
-          description: Database id of the URL
+          description: Id of the URL
           examples:
           - 672b1f8c9a1b2c3d4e5f6a7b
         fullUrl:
@@ -187,7 +196,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UrlDto"
         "400":
-          description: Invalid URL
+          description: Invalid URL or expiration
           content:
             application/json:
               examples:
@@ -196,6 +205,12 @@ paths:
                     code: 1
                     name: NOT_VALID_URL
                     description: Url is not valid
+                NOT_VALID_EXPIRATION:
+                  value:
+                    code: 6
+                    name: NOT_VALID_EXPIRATION
+                    description: Expiration time must be between 1 and 365 days from
+                      now
               schema:
                 $ref: "#/components/schemas/ApiError"
         "401":

@@ -50,12 +50,19 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
     @Override
     public UrlDto saveUrl(UrlDto dto) {
         isValidUrl(dto);
-        var entity = new Url(dto);
+        var entity = new Url(dto, resolveExpireTime(dto.getExpireTime()));
         ObjectId id = new ObjectId();
         entity.setId(id);
         entity.setShortUrl(id.toHexString().substring(18, 24));
         repo.persist(entity);
         return new UrlDto(entity);
+    }
+
+
+    private ZonedDateTime resolveExpireTime(ZonedDateTime expireTime) {
+        isValidExpireTime(expireTime);
+        if (Objects.isNull(expireTime)) return ZonedDateTime.now(ZoneOffset.UTC).plusDays(DEFAULT_EXPIRE_DAYS);
+        return expireTime;
     }
 
     @Override

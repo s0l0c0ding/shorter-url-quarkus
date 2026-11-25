@@ -1,6 +1,5 @@
 package dev.solocoding.components.url.entity;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -23,13 +22,13 @@ public class Url {
     private Long version;
     private ZonedDateTime expireTime;
 
-    public Url (UrlDto url) {
+    public Url (UrlDto url, ZonedDateTime expireTime) {
         id =  url.getId() != null?  new ObjectId(url.getId()) : null;
         fullUrl = url.getFullUrl();
         shortUrl = url.getShortUrl();
         countryCountList = url.getCountryCountList();
         count = url.getCount();
-        this.expireTime = ZonedDateTime.now(ZoneOffset.UTC).plusDays(30l);
+        this.expireTime = expireTime;
     }
 
 }

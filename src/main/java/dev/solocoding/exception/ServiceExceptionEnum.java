@@ -13,7 +13,8 @@ public enum ServiceExceptionEnum {
     EXPIRED_URL(2, Status.BAD_REQUEST, "Url is expired, will be deleted after 30 days from Expiration: "),
     EXPIRED_DELETED(3, Status.BAD_REQUEST, "Url is expired from 60 days and has been deleted"),
     URL_NOT_FOUND(4, Status.NOT_FOUND, "No such url is present"),
-    INTERNAL_ERROR(5, Status.INTERNAL_SERVER_ERROR, "Something bad happend");
+    INTERNAL_ERROR(5, Status.INTERNAL_SERVER_ERROR, "Something bad happend"),
+    NOT_VALID_EXPIRATION(6, Status.BAD_REQUEST, "Expiration time must be between 1 and 365 days from now");
     
     private int code;
     private Status httpStatus;
