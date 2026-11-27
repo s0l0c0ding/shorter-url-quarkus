@@ -93,6 +93,8 @@ components:
       scheme: basic
       description: Authentication
 tags:
+- name: Public URL Controller
+  description: Anonymous visitor URL shortening
 - name: Redirect Controller
   description: Public redirects
 - name: Url Controller
@@ -113,6 +115,80 @@ paths:
               schema:
                 format: uri
                 type: string
+  /public/url:
+    post:
+      summary: Create a public short URL
+      description: Create a 7-day short URL for an anonymous visitor
+      tags:
+      - Public URL Controller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UrlDto"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UrlDto"
+        "400":
+          description: Invalid URL
+          content:
+            application/json:
+              examples:
+                NOT_VALID_URL:
+                  value:
+                    code: 1
+                    name: NOT_VALID_URL
+                    description: Url is not valid
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "429":
+          description: Rate limited
+          content:
+            application/json:
+              examples:
+                RATE_LIMITED:
+                  value:
+                    code: 7
+                    name: RATE_LIMITED
+                    description: "Too many requests, try again later"
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: Rate limit store unavailable
+          content:
+            application/json:
+              examples:
+                RATE_LIMIT_UNAVAILABLE:
+                  value:
+                    code: 8
+                    name: RATE_LIMIT_UNAVAILABLE
+                    description: Rate limit store is unavailable
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    code: 5
+                    name: INTERNAL_ERROR
+                    description: Something bad happend
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security:
+      - SecurityScheme:
+        - user
   /redirect/{shortUrl}:
     get:
       summary: Redirect
@@ -366,7 +442,8 @@ paths:
                   value:
                     code: 2
                     name: EXPIRED_URL
-                    description: Url is expired
+                    description: "Url is expired, will be deleted after 30 days from\
+                      \ Expiration: "
                 EXPIRED_DELETED:
                   value:
                     code: 3
@@ -434,7 +511,8 @@ paths:
                   value:
                     code: 2
                     name: EXPIRED_URL
-                    description: Url is expired
+                    description: "Url is expired, will be deleted after 30 days from\
+                      \ Expiration: "
                 EXPIRED_DELETED:
                   value:
                     code: 3

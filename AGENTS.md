@@ -1,92 +1,144 @@
-# AGENTS.md
+# AGENTS.md — shorter-url-quarkus
 
-## Commands
+Umbrella workspace for solo-coding projects. Spec-driven development (SDD) is
+available here and is explicit-opt-in.
 
-```bash
-# Dev mode (requires MongoDB container first)
-# Always use fully qualified image names: Podman has no unqualified-search
-# registries configured by default and rejects short names like "mongo".
-docker run --name mongodb -d docker.io/library/mongo:4.2-bionic
-mvn quarkus:dev
+## Communication style
 
-# Unit tests only (no container needed; does not regenerate the OpenAPI contract)
-mvn test
+Use the `caveman` skill voice in every session in this workspace. Terse, no
+fluff, all technical facts preserved. Applies until the user says "stop caveman"
+or "normal mode".
 
-# All tests (integration tests use Testcontainers automatically)
-mvn verify -DskipITs=false
+## Repo map
 
-# Package JVM (regenerates the OpenAPI contract)
-mvn package
+| Path | What | Git |
+| --- | --- | --- |
+| `specs/` | Constitution, feature specs, plans, tasks | this repo |
+| `.opencode/` | SDD commands and the read-only spec reviewer agent | this repo |
+| `docs/sdd.md` | The workflow explained for humans | this repo |
+| `shorter-url-quarkus/` | Quarkus 3.40 API, Java 25, MongoDB | its own nested repo, ignored here |
+| `shorter-url-web/` | Next.js 16 + TypeScript frontend (not scaffolded yet) | this repo |
 
-# Native build (requires GraalVM or container support)
-mvn package -Pnative -Dquarkus.native.containerBuild=true
-```
+The backend is the source of truth for the HTTP contract. The frontend consumes
+it through generated types. Features may span both repos; the spec names the
+affected repos.
 
-Use the system `mvn`. This repo has no Maven wrapper; do not add one.
+## SDD workflow — hard gates
 
-## OpenAPI contract
+0. **Spec workflow is explicit-opt-in.** Create `spec.md`, `plan.md`, or
+   `tasks.md` only when the user invokes `/specify`, `/plan-feature`, `/tasks`,
+   or explicitly asks for that artifact. A general "yes", agreement to
+   proceed, or a direct implementation request is not consent to start SDD.
+   Direct requests proceed directly; offer `/specify` only when the user asks
+   for SDD.
+1. **Specify.** Write `specs/NNNN-slug/spec.md` in `draft`. Resolve open
+   questions with the user. Only the user moves it to `approved`.
+2. **Plan.** Draft `plan.md` against the spec; it maps every acceptance
+   criterion to a component and a test strategy. A provisional plan may be
+   prepared for review while the spec is `draft`, but it is not executable until
+   the spec is `approved`. Resolve open questions with the user first, asking them
+   one at a time.
+3. **Tasks.** Draft `tasks.md` against the plan; it is executable only when the
+   spec and plan are `approved`. Every task cites the acceptance criteria it
+   satisfies and the files it touches.
+4. **Implement.** One task at a time. Test first where practical. Tick the box,
+   update `specs/README.md`, keep the spec truthful.
+5. **Verify.** Map each acceptance criterion to passing evidence (test, command,
+   or manual check). Only then set `status: done`.
 
-`docs/openapi.yaml` is generated from annotations. It is a committed artifact.
+Commands: `/specify`, `/review`, `/approve`, `/plan-feature`, `/tasks`,
+`/implement`, `/verify`.
 
-- `mvn package` regenerates `docs/openapi.yaml`.
-- `mvn verify -DskipITs=false` regenerates `docs/openapi.yaml`.
-- `mvn test` does not regenerate it; test output goes under `target/`.
-- Commit the regenerated `docs/openapi.yaml` with any source change that affects it.
-- Never edit `docs/openapi.yaml` by hand. Change annotations and rebuild.
+Plan and task approval is recorded in their frontmatter with `approved_by` and
+`approved_on`. `/approve` requires explicit user confirmation and approves one
+artifact per run.
 
-`docs/openapi.json` is generated alongside it and is ignored by Git.
+## Non-negotiable rules
 
-## Architecture
-
-- **Stack**: Quarkus 3.34.1, MongoDB (Panache), RESTEasy JSON-B
-- **Java**: 21
-- **Package**: `dev.solocoding`
-- **Security**: Elytron embedded properties (`src/main/resources/application.properties`)
-  - User `user` / `fake1234` has roles `admin,user`
-  - User `user1` / `fake1234` has role `user`
-
-## Testing
-
+- Never create a git commit unless the user explicitly asks for one. Never
+  stage or prepare commit changes unless the user explicitly asks for staging
+  or committing. Leave implementation changes in the working tree.
+- Never invent, widen, or silently change acceptance criteria. Propose the
+  change, get explicit approval, and append it to the spec's change log.
+- **Ask, don't assume; one step at a time.** During `/specify`, `/plan-feature`,
+  `/tasks`, and at every approval gate, put each open decision to the user as an
+  explicit question and wait for the answer. One question — or one step — per
+  turn. Never batch approvals, never treat a recommendation as consent, and never
+  start the next step until the current one is confirmed.
+- Never create spec artifacts unless `/specify`, `/plan-feature`, `/tasks`, or
+  an explicit request for that artifact was given. A "yes" to a question is not
+  an SDD invocation.
+- When SDD is active, never implement code while a spec is `draft` or
+  `needs-clarification`.
+- OpenAPI is the contract. Frontend types are generated from it, never
+  hand-copied or hand-edited.
+- The browser talks only to the Next.js server (BFF). Basic credentials never
+  reach the browser; the session is an httpOnly cookie.
+- No secrets in the repo. `.env.example` is the only committed env file.
+- Runtime-tunable values (for example limits, timeouts, URLs, and feature flags)
+  must use environment-backed configuration with safe defaults, not source-code
+  constants. Document environment variable names and defaults in the relevant
+  repo guidance.
+- **Ask before installing anything.** That includes system packages, npm
+  packages, Maven dependencies, container images, and project scaffolds.
+  Wait for explicit confirmation before running the install command.
+- Do not modify `shorter-url-quarkus/` unless a spec names it as affected.
+- Do not read `archive/` or any file outside the workspace root. Archived specs
+  are out of scope for id allocation, review, and reference; work only from the
+  live tree.
 - Test methods follow the existing project style: `should<Behavior>` or
   `should<Behavior>When<Condition>`. A brief comment names the acceptance
   criterion the test proves, e.g. `// AC-3.2`. Do not embed the AC id in the
   method name.
-- Unit tests: Standard JUnit 5 + Mockito in `src/test/java`
-- Integration tests: Use Testcontainers (MongoDbContainer in `conftest`)
-- Testcontainers starts a real MongoDB automatically via `QuarkusTestResourceLifecycleManager`
-- No manual Docker setup needed for tests
-- Podman: Testcontainers talks to the rootless Podman socket. Configure `~/.testcontainers.properties`:
-  ```properties
-  docker.host=unix:///run/user/1000/podman/podman.sock
-  ryuk.disabled=true
-  ```
-  and keep container images fully qualified (e.g. `docker.io/library/mongo:latest`).
 
-## IP Geolocation Data
+## Commands
 
-The app requires an `Ip` collection with a compound index on `ipfrom` and `ipto`. See `.env_sec` for:
-- Import command (`mongoimport` with CSV)
-- Cleanup query (delete where `countryname: "-"`)
-- Index creation command (`createIndex`)
+### Backend — `shorter-url-quarkus/`
 
-## GCP Deployment
+```bash
+./mvnw test                 # unit tests, no container
+./mvnw verify               # unit + integration (Testcontainers)
+./mvnw quarkus:dev          # dev mode on :8080 (needs MongoDB)
+podman run --name mongodb -d docker.io/library/mongo:4.2-bionic
+```
 
-- Triggered on GitHub release creation
-- Builds native image: `mvn package -Pnative -DskipTests`
-- Uses `src/main/docker/Dockerfile.native`
-- Pushes to `gcr.io/<PROG_ID>/shorter-url:<version>`
+See `shorter-url-quarkus/AGENTS.md` for Podman/Testcontainers setup and
+deployment notes.
 
-## Docker Build Gotcha
+### Web — `shorter-url-web/` (after scaffolding)
 
-If building locally with multi-stage Docker:
-- Must comment out or remove content in `.dockerignore` (it filters `src/` out by default)
-- Use: `docker build -f src/main/docker/Dockerfile.multistage`
+```bash
+npm run dev                 # Next.js on :3000
+npm run lint
+npm run typecheck
+npm test
+npm run build
+npm run api:types           # regenerate lib/api/schema.d.ts from the backend contract
+```
 
-## Config Source
+### Workspace
 
-Real runtime config is in `src/main/resources/application.properties`. Dev credentials are in `.env_sec` (do not commit).
+```bash
+git status                  # root repo only tracks specifications and docs
+```
 
-## Migration Notes (Quarkus 2.x → 3.x)
+## Spec conventions
 
-- Jakarta EE namespace: `javax.*` → `jakarta.*`
-- Security extension: `quarkus-security` → `quarkus-elytron-security-properties-file`
+- Folder: `specs/NNNN-kebab-slug/` with a zero-padded four-digit id.
+- Files: `spec.md` (WHAT/WHY), `plan.md` (HOW), `tasks.md` (ORDER),
+   `evidence.md` (PROOF).
+- Frontmatter: `id`, `slug`, `title`, `status`, `approved_by`, `approved_on`,
+   `projects`, `repos`, `owners`, `created`, `updated`.
+- Statuses: `draft` → `approved` → `implementing` → `done`, plus
+   `needs-clarification`, `on-hold`, `superseded`.
+- Acceptance criteria: `AC-<story>.<n>` written as Given/When/Then and testable
+   on their own. IDs are scoped to the spec.
+- Traceability chain: user story → AC → plan component → task → test.
+- Every spec lists its **out of scope** items and an **open questions** section.
+   An open question that blocks implementation keeps the spec in `draft`.
+
+## Definition of Done
+
+See `specs/constitution.md`, Article 8. In short: every AC has passing
+evidence, all gates for every affected repo pass, the spec/plan/tasks match
+what was built, and the index is up to date.

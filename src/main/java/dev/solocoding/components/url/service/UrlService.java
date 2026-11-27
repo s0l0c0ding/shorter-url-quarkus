@@ -18,6 +18,8 @@ public interface UrlService {
      */
     UrlDto saveUrl (UrlDto dto);
 
+    UrlDto savePublicUrl (UrlDto dto);
+
 
     void deleteUrlById (String id);
 

@@ -7,20 +7,18 @@ import java.util.concurrent.TimeUnit;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 
-import org.jboss.logging.Logger;
-
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 
 import dev.solocoding.components.url.repository.UrlRepository;
 import io.quarkus.runtime.StartupEvent;
+import lombok.extern.slf4j.Slf4j;
 
 @ApplicationScoped
+@Slf4j
 public class UrlIndexInitializer {
 
     public static final String EXPIRE_TIME_TTL_INDEX = "expireTime_ttl";
-
-    private static final Logger LOG = Logger.getLogger(UrlIndexInitializer.class);
 
     private final UrlRepository repo;
 
@@ -34,9 +32,9 @@ public class UrlIndexInitializer {
                     Indexes.ascending("expireTime"),
                     new IndexOptions().name(EXPIRE_TIME_TTL_INDEX)
                             .expireAfter(EXPIRE_RETENTION_DAYS, TimeUnit.DAYS));
-            LOG.infof("URL TTL index %s ready (%d days after expiry)", EXPIRE_TIME_TTL_INDEX, EXPIRE_RETENTION_DAYS);
+            log.info("URL TTL index {} ready ({} days after expiry)", EXPIRE_TIME_TTL_INDEX, EXPIRE_RETENTION_DAYS);
         } catch (RuntimeException e) {
-            LOG.warnf(e, "Unable to create URL TTL index %s", EXPIRE_TIME_TTL_INDEX);
+            log.warn("Unable to create URL TTL index {}", EXPIRE_TIME_TTL_INDEX, e);
         }
     }
 }

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -31,6 +32,7 @@ import dev.solocoding.components.ip.dto.IpDto;
 import dev.solocoding.components.ip.service.IpServiceImpl;
 import dev.solocoding.components.request.service.RequestDetails;
 import dev.solocoding.components.request.service.RequestDetailsImpl;
+import dev.solocoding.components.ratelimit.service.RateLimitService;
 import dev.solocoding.components.url.dto.UrlDto;
 import dev.solocoding.components.url.entity.Url;
 import dev.solocoding.components.url.repository.UrlRepository;
@@ -48,6 +50,7 @@ class UrlServiceImplTest {
     private RequestDetails requestDetails;
     private UrlRepository repo;
     private EventBus bus;
+    private RateLimitService rateLimitService;
 
     private Url getShortUrlStub() {
         Url url = new Url();
@@ -76,7 +79,8 @@ class UrlServiceImplTest {
         ipService = mock(IpServiceImpl.class);
         requestDetails = mock(RequestDetailsImpl.class);
         bus = mock(EventBus.class);
-        urlService = new UrlServiceImpl(repo, ipService, requestDetails, bus);
+        rateLimitService = mock(RateLimitService.class);
+        urlService = new UrlServiceImpl(repo, ipService, requestDetails, bus, rateLimitService);
     }
 
     @Nested
@@ -200,6 +204,67 @@ class UrlServiceImplTest {
             var actual =  urlService.saveUrl(dto);
             assertEquals(getShortUrlStub().getFullUrl(), actual.getFullUrl());
             assertNotNull(actual.getExpireTime());
+        }
+
+        @Test
+        // AC-3.1
+        void shouldSavePublicUrlWithSevenDayExpiration() {
+            var dto = new UrlDto();
+            dto.setFullUrl("https://www.usercoding.dev");
+            var reservation = new ObjectId();
+            when(requestDetails.getRemoteAddress()).thenReturn(REMOTE_IP);
+            when(rateLimitService.reserve(REMOTE_IP)).thenReturn(reservation);
+
+            var actual = urlService.savePublicUrl(dto);
+
+            assertTrue(actual.getExpireTime().isAfter(ZonedDateTime.now(ZoneOffset.UTC).plusDays(6).plusHours(23)));
+            assertTrue(actual.getExpireTime().isBefore(ZonedDateTime.now(ZoneOffset.UTC).plusDays(7).plusHours(1)));
+            verify(repo).persist(any(Url.class));
+            verify(rateLimitService).reserve(REMOTE_IP);
+        }
+
+        @Test
+        // AC-3.2
+        void shouldIgnoreRequestedExpirationForPublicUrl() {
+            var dto = new UrlDto();
+            dto.setFullUrl("https://www.usercoding.dev");
+            dto.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(30));
+            var reservation = new ObjectId();
+            when(requestDetails.getRemoteAddress()).thenReturn(REMOTE_IP);
+            when(rateLimitService.reserve(REMOTE_IP)).thenReturn(reservation);
+
+            var actual = urlService.savePublicUrl(dto);
+
+            var days = Duration.between(ZonedDateTime.now(ZoneOffset.UTC), actual.getExpireTime()).toDays();
+            assertTrue(days >= 6 && days <= 7);
+        }
+
+        @Test
+        // AC-3.6
+        void shouldNotReserveQuotaForInvalidPublicUrl() {
+            var dto = new UrlDto();
+            dto.setFullUrl("ftp://invalid.example");
+
+            assertThrows(ServiceException.class, () -> urlService.savePublicUrl(dto));
+
+            verify(rateLimitService, never()).reserve(any(String.class));
+            verify(repo, never()).persist(any(Url.class));
+        }
+
+        @Test
+        // AC-3.6
+        void shouldReleaseReservationWhenPublicUrlPersistenceFails() {
+            var dto = new UrlDto();
+            dto.setFullUrl("https://www.usercoding.dev");
+            var reservation = new ObjectId();
+            when(requestDetails.getRemoteAddress()).thenReturn(REMOTE_IP);
+            when(rateLimitService.reserve(REMOTE_IP)).thenReturn(reservation);
+            doThrow(new RuntimeException("persist failed")).when(repo).persist(any(Url.class));
+
+            var exception = assertThrows(ServiceException.class, () -> urlService.savePublicUrl(dto));
+
+            assertEquals(5, ((ApiError) exception.toResponseEntity().getEntity()).getCode());
+            verify(rateLimitService).release(reservation);
         }
 
         @Test

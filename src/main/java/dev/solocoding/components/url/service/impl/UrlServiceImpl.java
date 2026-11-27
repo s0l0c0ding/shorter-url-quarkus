@@ -20,6 +20,7 @@ import dev.solocoding.common.CountryCount;
 import dev.solocoding.components.ip.dto.IpDto;
 import dev.solocoding.components.ip.service.IpService;
 import dev.solocoding.components.request.service.RequestDetails;
+import dev.solocoding.components.ratelimit.service.RateLimitService;
 import dev.solocoding.components.url.dto.UrlDto;
 import dev.solocoding.components.url.entity.Url;
 import dev.solocoding.components.url.repository.UrlRepository;
@@ -40,6 +41,7 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
     private final IpService ipService;
     private final RequestDetails requestDetails;
     private final EventBus bus;
+    private final RateLimitService rateLimitService;
 
     @Override
     public UrlDto getUrlByShortUrl(String shortUrl) {
@@ -57,6 +59,21 @@ public class UrlServiceImpl implements UrlService, UrlValidation {
         entity.setShortUrl(id.toHexString().substring(18, 24));
         repo.persist(entity);
         return new UrlDto(entity);
+    }
+
+    @Override
+    public UrlDto savePublicUrl(UrlDto dto) {
+        isValidUrl(dto);
+        ObjectId reservation = rateLimitService.reserve(requestDetails.getRemoteAddress());
+        try {
+            var publicDto = new UrlDto();
+            publicDto.setFullUrl(dto.getFullUrl());
+            publicDto.setExpireTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(7));
+            return saveUrl(publicDto);
+        } catch (RuntimeException e) {
+            rateLimitService.release(reservation);
+            throw new ServiceException(ServiceExceptionEnum.INTERNAL_ERROR, "");
+        }
     }
 
 
